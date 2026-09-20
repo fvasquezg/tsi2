@@ -11,3 +11,52 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+
+model Marca {
+  cod_marca Int @id @default(autoincrement()) @db.TinyInt
+  nom_marca String @db.VarChar(30)
+  productos Producto[]
+  
+}
+
+model Producto {
+  cod_producto Int @id @default(autoincrement()) @db.SmallInt
+  nom_producto String @db.VarChar(50)
+  desc_producto String @db.VarChar(255)
+  stock Int @db.SmallInt
+  stock_critico Int @db.SmallInt
+  precio_unitario Int
+  cod_marca Int @db.TinyInt
+  activo Boolean @default(true)
+  imagen String? @db.VarChar(250)
+
+  marca Marca @relation(fields: [cod_marca], references: [cod_marca])
+  categorias CategoriaProducto[]  
+}
+
+model Categoria {
+  cod_categoria Int @id @default(autoincrement()) @db.TinyInt
+  nom_categoria String @db.VarChar(30)
+  productos CategoriaProducto[]
+}
+
+model CategoriaProducto {
+  cod_producto Int @db.SmallInt
+  cod_categoria Int @db.TinyInt
+
+  producto Producto @relation(fields: [cod_producto], references: [cod_producto])
+  categoria Categoria @relation(fields: [cod_categoria], references: [cod_categoria])
+
+  @@id([cod_producto, cod_categoria])
+}
+
+model Empleado {
+  id_empleado Int @id @default(autoincrement()) @db.TinyInt
+  correo String @unique @db.VarChar(50)
+  nombres String @db.VarChar(50)
+  ap_paterno String @db.VarChar(30)
+  ap_materno String @db.VarChar(30)
+  contrasena String @db.VarChar(255)
+  activa Boolean @default(true)
+  tipo_cuenta Int @db.TinyInt
+}
