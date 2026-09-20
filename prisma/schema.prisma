@@ -16,7 +16,6 @@ model Marca {
   cod_marca Int @id @default(autoincrement()) @db.TinyInt
   nom_marca String @db.VarChar(30)
   productos Producto[]
-  
 }
 
 model Producto {
