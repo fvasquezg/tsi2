@@ -1,2 +1,20 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+@theme {
+    /* Fondos */
+    --color-fondo-login-admin: #F9BA1B;    
+
+
+    /* Bordes */
+    --color-borde-login-admin: #F4EED9;
+
+    /* Texto */
+    --color-texto-login-admin: #060704;
+    --color-subtexto-login-admin: #7F7964;
+
+    /* Botones */
+    --color-boton: #F9BA1B;
+    --color-boton-hover: #F9BA1B;
+
+}

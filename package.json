@@ -13,14 +13,18 @@
     "@nuxt/ui": "^4.11.1",
     "@prisma/adapter-mariadb": "^7.10.0",
     "@prisma/client": "^7.10.0",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
+    "jsonwebtoken": "^9.0.3",
     "nuxt": "^4.5.2",
+    "nuxt-auth-utils": "^0.5.30",
     "tailwindcss": "^4.3.3",
     "vue": "^3.5.42",
-    "vue-router": "^5.3.1"
+    "vue-router": "^5.3.1",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/node": "^24.13.5",
-    "prisma": "^8.0.0-rc.15"
+    "prisma": "^7.10.0"
   }
 }
