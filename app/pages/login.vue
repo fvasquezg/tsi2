@@ -50,7 +50,7 @@ const colorFondoCamposFormulario = 'bg-fondo-login-admin/10 text-texto-login-adm
     <div class="flex min-h-screen items-center justify-center">
         <!-- div donde salen todas las cosas del login -->
         <div
-            class="rounded-2xl bg-white flex flex-col items-center px-4 sm:px-6 md:px-12 py-4 sm:py-6 md:py-8 border-2 border-borde-login-admin shadow-2xl">
+            class="rounded-2xl bg-white flex flex-col items-center px-4 sm:px-6 md:px-12 py-4 sm:py-6 md:py-8 border-2 border-borde-login-admin shadow-2xl max-w-sm">
             <img src="~/assets/images/logo.webp" alt="Logo de la empresa" class="w-16">
             <h2 class="font-bold text-3xl py-2 text-texto-login-admin">Iniciar Sesión</h2>
             <h2 class="font-bold text-lg py-2 text-texto-login-admin">Acceso exclusivo para empleados</h2>
@@ -67,6 +67,11 @@ const colorFondoCamposFormulario = 'bg-fondo-login-admin/10 text-texto-login-adm
                     <UInput v-model="formularioLogin.contrasena" type="password" class="w-full"
                         placeholder="Ej: ********" :ui="{ base: colorFondoCamposFormulario }" />
                 </UFormField>
+
+                <!-- Mensaje de error  -->
+                <p v-if="errorFormulario" class="text-red-500 text-sm text-center">
+                    Error, no se ha podido iniciar sesión. Por favor, verifique sus credenciales e intente nuevamente.
+                </p>
 
                 <!-- Boton de iniciar sesion -->
                 <UButton type="submit" :loading="iniciandoSesion"
