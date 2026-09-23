@@ -10,10 +10,8 @@ export default defineEventHandler(async (event) => {
     // extraer los datos del formulario del producto
     const { nom_producto, desc_producto, stock, stock_critico, precio_unitario, cod_marca, nombreArchivo, archivoBase64 } = await readBody(event)
 
-
     const nom_productoNormalizado = typeof nom_producto === 'string' ? nom_producto.trim(): '';
     const desc_productoNormalizado = typeof desc_producto === 'string' ? desc_producto.trim(): '';
-
 
     // si mandaron una imagen nueva, se guarda y se reemplaza la ruta
     // si no, se deja la imagen que el producto ya tenía
