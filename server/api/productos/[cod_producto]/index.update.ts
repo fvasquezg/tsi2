@@ -1,4 +1,3 @@
-// server/api/productos/[cod_producto].put.ts
 import fs from 'node:fs'
 
 export default defineEventHandler(async (event) => {
