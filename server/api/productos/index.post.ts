@@ -7,11 +7,14 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 400, message: 'Debe seleccionar al menos una categoría' })
     }
 
+    const nom_productoNormalizado = typeof nom_producto === 'string' ? nom_producto.trim(): '';
+    const desc_productoNormalizado = typeof desc_producto === 'string' ? desc_producto.trim(): '';
+    
     // insertar el producto en la base de datos, junto con sus categorias
     const producto = await prisma.producto.create({
         data: {
-            nom_producto,
-            desc_producto,
+            nom_producto: nom_productoNormalizado,
+            desc_producto: desc_productoNormalizado,            
             stock,
             stock_critico,
             precio_unitario,
