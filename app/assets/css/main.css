@@ -2,19 +2,29 @@
 @import "@nuxt/ui";
 
 @theme {
-    /* Fondos */
-    --color-fondo-login-admin: #F9BA1B;    
+  /* Fondos */
+  --color-fondo-login-admin: #f9ba1b;
 
+  /* Fondos temporales*/
+  --color-fondo-general: #f5efef;
+  --color-fondo-login: #cbb8a0;
+  --color-fondo-card: #f3ebd6;
+  --color-fondo-formulario: #f3ebd6;
 
-    /* Bordes */
-    --color-borde-login-admin: #F4EED9;
+  /* Bordes */
+  --color-borde-login-admin: #f4eed9;
+  --color-borde: #ecb914;
 
-    /* Texto */
-    --color-texto-login-admin: #060704;
-    --color-subtexto-login-admin: #7F7964;
+  /* Texto */
+  --color-texto-login-admin: #060704;
+  --color-subtexto-login-admin: #7f7964;
 
-    /* Botones */
-    --color-boton: #F9BA1B;
-    --color-boton-hover: #F9BA1B;
+  --color-texto: #4f3d35;
+  --color-texto-formulario: #33241eb2;
 
+  /* Botones */
+  --color-boton: #f9ba1b;
+  --color-boton-hover: #f9ba1b;
+  --color-boton-eliminar: #db1515;
+  --color-boton-eliminar-hover: #ff0000;
 }
