@@ -3,6 +3,7 @@ import fs from 'node:fs'
 export default defineEventHandler(async (event) => {
     const cod_producto = Number(getRouterParam(event, 'cod_producto'))
 
+    // si no mandaron un código de producto, se devuelve un error
     if (!cod_producto) {
         throw createError({ statusCode: 400, message: 'Código de producto inválido' })
     }
@@ -36,6 +37,7 @@ export default defineEventHandler(async (event) => {
                 stock_critico,
                 precio_unitario,
                 cod_marca,
+                // los 3 puntos de aca es para indicar que es opcional.
                 ...datosImagen
             },
             include: {
