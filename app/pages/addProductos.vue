@@ -1,12 +1,22 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui';
 import type { Producto } from '~/types/producto';
+import { z } from 'zod';
 
-//imports
-
-//definPageMeta // Para solo darle acceso al administrador/empleadss a esta pagina
+//definPageMeta -->   definePageMeta({middleware: ['RELLENAR']})
 
 //constValidarCrearProducto = z.object
+const validarCrearProducto = z.object({
+    nom_producto: z.string().min(3, 'Debe ingresar nombre del producto'),
+    desc_producto: z.string().min(6, 'Debe ingresar una descripción'),
+    stock: z.coerce.number('El valor debe ser un número'),
+    stock_critico: z.coerce.number('El valor debe ser un número'),
+    precio_unitario: z.coerce.number('El valor debe ser un número'),
+    //PENDIENTES DE REVISAR CÓMO DEBEN SER
+    // cod_marca: 
+    //  activo: 
+    // imagen: 
+})
 
 // para tomar la informacion de los productos en la tabla producto
 const { data: productos, pending, error, refresh } = await useFetch<Producto[]>('/api/productos')
@@ -17,10 +27,31 @@ const errorFormularioAgregar = ref('');
 const guardandoNuevoProducto = ref(false);
 
 //formulario nuevoProducto
-const formularioNuevoProducto = reactive({})
+const formularioNuevoProducto = reactive({
+    nom_producto: '',
+    desc_producto: '',
+    stock: undefined,
+    stock_critico: undefined,
+    precio_unitario: undefined,
+    //PENDIENTES DE REVISAR CÓMO DEBEN SER
+    cod_marca: '',
+    activo: '',
+})
 
 //función para reiniciar el formularioAgregar
-function reiniciarFormularioAgregar() { }
+function reiniciarFormularioAgregar() {
+    formularioNuevoProducto.nom_producto = '';
+    formularioNuevoProducto.desc_producto = '';
+    formularioNuevoProducto.stock = undefined;
+    formularioNuevoProducto.stock_critico = undefined;
+    formularioNuevoProducto.precio_unitario = undefined;
+    //PENDIENTES DE REVISAR CÓMO DEBEN SER
+    formularioNuevoProducto.cod_marca = '';
+    formularioNuevoProducto.activo = '';
+
+    archivoImagen.value = null;
+    errorFormularioAgregar.value = '';
+}
 
 //función para cerrar el formularioAgregar
 function cerrarFormularioAgregar() {
@@ -28,8 +59,62 @@ function cerrarFormularioAgregar() {
     reiniciarFormularioAgregar();
 }
 
+// Para la imagen
+const archivoImagen = ref<File | null>(null)
+
 //función async para guardar nuevo producto
-async function guardarProducto() { }
+async function guardarProducto() {
+    guardandoNuevoProducto.value = true;
+    errorFormularioAgregar.value = '';
+
+    try {
+        let nombreArchivo = '';
+        let archivoBase64 = '';
+        if (archivoImagen.value) {
+            nombreArchivo = archivoImagen.value.name
+            archivoBase64 = await new Promise<string>((resolve) => {
+                const reader = new FileReader()
+                reader.onload = (event: any) => resolve(event.target.result)
+                reader.readAsDataURL(archivoImagen.value!)
+            })
+        }
+
+        await $fetch('/api/productos', {
+            method: 'POST',
+            body: {
+                nom_producto: formularioNuevoProducto.nom_producto,
+                desc_producto: formularioNuevoProducto.desc_producto,
+                stock: formularioNuevoProducto.stock,
+                stock_critico: formularioNuevoProducto.stock_critico,
+                precio_unitario: formularioNuevoProducto.precio_unitario,
+                //PENDIENTES DE REVISAR CÓMO DEBEN SER
+                cod_marca: formularioNuevoProducto.cod_marca,
+                activo: formularioNuevoProducto.activo,
+
+                nombreArchivo: nombreArchivo,
+                archivoBase64: archivoBase64,
+            }
+        });
+        cerrarFormularioAgregar();
+        await refresh();
+
+        useToast().add({
+            duration: 3000,
+            title: 'Agregado correctamente',
+            description: 'El producto ha sido agregado correctamente.',
+            ui: {
+                root: 'bg-fondo-card border border-fondo-login',
+                title: 'text-texto font-bold',
+                description: 'text-texto-formulario'
+            }
+        })
+    } catch (err: any) {
+        errorFormularioAgregar.value = getApiErrorMessage(err, 'No se pudgo agregar el producto.');
+    }
+    finally {
+        guardandoNuevoProducto.value = false;
+    }
+}
 
 //para los colores de los campos del formulario PENDIENTE CAMBIAR COLORES
 const colorTextoFormulario = 'text-texto-formulario';
@@ -43,6 +128,33 @@ const errorBorrar = ref('');
 
 //función async para borrar producto
 async function borrarProducto() {
+    borrandoProducto.value = true;
+    const nombreProductoBorrar = productoBorrar.value?.nom_producto;
+    try {
+        await $fetch(`/api/productos/${productoBorrar.value?.cod_producto}`, {
+            //PENDIENTE
+            //method: 'DELETE'
+        })
+        cerrarConfirmacionBorrar();
+        await refresh();
+
+        useToast().add({
+            duration: 3000,
+            title: 'Eliminado correctamente',
+            description: `Se elimino correctamente el producto ${nombreProductoBorrar}.`,
+            ui: {
+                root: 'bg-fondo-card border border-fondo-login',
+                title: 'text-texto font-bold',
+                description: 'text-texto-formulario'
+            }
+        })
+
+    } catch (err: any) {
+        errorFormularioAgregar.value = getApiErrorMessage(err, 'No se pudo borrar el producto.');
+    }
+    finally {
+        borrandoProducto.value = false;
+    }
 }
 
 //para confirmar la elimincación del producto
@@ -57,7 +169,20 @@ function cerrarConfirmacionBorrar() {
 }
 
 //PARA LA TABLA
-const columns: TableColumn<Producto>[] = []
+const columns: TableColumn<Producto>[] = [
+    { accessorKey: 'cod_producto', header: 'Código Producto', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { accessorKey: 'nom_producto', header: 'Nombre', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { accessorKey: 'desc_producto', header: 'Descripción', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { accessorKey: 'stock', header: 'Stock', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { accessorKey: 'stock_critico', header: 'Stock Crítico', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { accessorKey: 'precio_unitario', header: 'Precio Unitario', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { accessorKey: 'cod_marca', header: 'Código Marca', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { accessorKey: 'activo', header: 'Estado', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { accessorKey: 'imagen', header: 'Imagen', meta: { class: { th: 'text-center', td: 'text-center' } } },
+
+    // columnas extras
+    { id: 'eliminar', header: 'Eliminar', meta: { class: { th: 'text-center', td: 'text-center' } } },
+]
 
 const tableMeta = createTableMeta<Producto>()
 </script>
@@ -98,7 +223,60 @@ const tableMeta = createTableMeta<Producto>()
             </UTable>
         </section>
         <!-- FORMULARIO PARA AGREGAR PRODUCTOS -->
+        <Popups v-model:open="mostrarFormularioAgregar" title="Agregar producto">
+            <UForm class="space-y-4" :state="formularioNuevoProducto" :schema="validarCrearProducto"
+                @submit.prevent="guardarProducto">
+                <!-- Nombre producto -->
+                <UFormField label="Nombre" name="titulo" :ui="{ label: colorTextoFormulario }">
+                    <UInput v-model="formularioNuevoProducto.nom_producto" class="w-full"
+                        placeholder="Ej: Master Cat Salmón Adultos 20 KG" :ui="{ base: colorFondoCamposFormulario }" />
+                </UFormField>
+                <!-- Descripción -->
+                <UFormField label="Descripción producto" name="descripcion" :ui="{ label: colorTextoFormulario }">
+                    <UInput v-model="formularioNuevoProducto.desc_producto" class="w-full"
+                        placeholder="Ej: Contiene fibras naturales que promueven una digestión sana y estimulan el desplazamiento de las bolas de pelo a través del sistema digestivo, previniendo el estreñimiento en tu gato. Además contiene Omega 3 que permite mantener una piel sana y un pelaje brillante."
+                        :ui="{ base: colorFondoCamposFormulario }" />
+                </UFormField>
+                <!-- Stock -->
+                <UFormField label="Stock" name="stock" :ui="{ label: colorTextoFormulario }">
+                    <UInput v-model="formularioNuevoProducto.stock" class="w-full" placeholder="Ej: 140"
+                        :ui="{ base: colorFondoCamposFormulario }" />
+                </UFormField>
+                <!-- Stock crítico -->
+                <UFormField label="Stock crítico" name="stock_critico" :ui="{ label: colorTextoFormulario }">
+                    <UInput v-model="formularioNuevoProducto.stock_critico" class="w-full" placeholder="Ej: 20"
+                        :ui="{ base: colorFondoCamposFormulario }" />
+                </UFormField>
+                <!-- Precio unitario -->
+                <UFormField label="Precio unitario" name="precio_unitario" :ui="{ label: colorTextoFormulario }">
+                    <UInput v-model="formularioNuevoProducto.precio_unitario" class="w-full" placeholder="Ej: $42.990"
+                        :ui="{ base: colorFondoCamposFormulario }" />
+                </UFormField>
+                <!-- Cod marca -->
+                <!-- Estado: activo o inactivo (boolean) -->
+                <!-- COSITO PARA AGREGAR IMAGEN -->
+                <UFormField label="Imagen" name="imagen" :ui="{ label: colorTextoFormulario }">
+                    <UFileUpload v-model="archivoImagen" accept="image/*" label="Agregue su imagen" class="w-full" :ui="{
+                        base: 'bg-fondo-general/90 hover:bg-fondo-general/70 transition-colors',
+                        label: 'text-texto'
+                    }" />
+                </UFormField>
+                <!-- div de botones cancelar y agregar -->
+                <div class="flex items-center justify-between gap-4 p-2">
+                    <!-- Boton cancelar -->
+                    <UButton type="button" @click="cerrarFormularioAgregar"
+                        class="bg-boton text-texto py-2 px-4 rounded-md hover:bg-boton-hover font-bold transition-colors">
+                        Cancelar
+                    </UButton>
 
+                    <!-- Boton agregar -->
+                    <UButton type="submit" :loading="guardandoNuevoProducto"
+                        class="bg-boton text-texto py-2 px-4 rounded-md hover:bg-boton-hover font-bold transition-colors">
+                        Agregar Producto
+                    </UButton>
+                </div>
+            </UForm>
+        </Popups>
 
 
 
