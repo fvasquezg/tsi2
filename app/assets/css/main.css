@@ -31,3 +31,7 @@
   --color-boton-eliminar: #db1515;
   --color-boton-eliminar-hover: #ff0000;
 }
+
+:root {
+  --ui-primary: var(--color-borde);
+}

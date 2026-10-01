@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui';
 import type { Producto } from '~/types/producto';
+import type { Marca } from '~/types/marca';
+import type { Categoria } from '~/types/categoria';
 import { z } from 'zod';
 
 //definPageMeta -->   definePageMeta({middleware: ['RELLENAR']})
@@ -9,17 +11,18 @@ import { z } from 'zod';
 const validarCrearProducto = z.object({
     nom_producto: z.string().min(3, 'Debe ingresar nombre del producto'),
     desc_producto: z.string().min(6, 'Debe ingresar una descripción'),
-    stock: z.coerce.number('El valor debe ser un número'),
-    stock_critico: z.coerce.number('El valor debe ser un número'),
-    precio_unitario: z.coerce.number('El valor debe ser un número'),
+    stock: z.coerce.number({ message: 'Debe ser un número' }).int().min(0, 'No puede ser negativo'),
+    stock_critico: z.coerce.number({ message: 'Debe ser un número' }).int().min(0),
+    precio_unitario: z.coerce.number({ message: 'Debe ser un número' }).min(1, 'Debe ser mayor a 0'),
     //PENDIENTES DE REVISAR CÓMO DEBEN SER
-    // cod_marca: 
-    //  activo: 
-    // imagen: 
+    cod_marca: z.number({ message: 'Debe seleccionar una marca' }),
+    categorias: z.array(z.number()).min(1, 'Debe seleccionar al menos una categoría'),
 })
 
 // para tomar la informacion de los productos en la tabla producto
 const { data: productos, pending, error, refresh } = await useFetch<Producto[]>('/api/productos')
+const { data: marcas } = await useFetch<Marca[]>('/api/marcas')
+const { data: categorias } = await useFetch<Categoria[]>('/api/categorias')
 
 // Agregar usuario
 const mostrarFormularioAgregar = ref(false);
@@ -30,12 +33,11 @@ const guardandoNuevoProducto = ref(false);
 const formularioNuevoProducto = reactive({
     nom_producto: '',
     desc_producto: '',
-    stock: undefined,
-    stock_critico: undefined,
-    precio_unitario: undefined,
-    //PENDIENTES DE REVISAR CÓMO DEBEN SER
-    cod_marca: '',
-    activo: '',
+    stock: undefined as number | undefined,
+    stock_critico: undefined as number | undefined,
+    precio_unitario: undefined as number | undefined,
+    cod_marca: undefined as number | undefined,
+    categorias: [] as number[],
 })
 
 //función para reiniciar el formularioAgregar
@@ -46,8 +48,8 @@ function reiniciarFormularioAgregar() {
     formularioNuevoProducto.stock_critico = undefined;
     formularioNuevoProducto.precio_unitario = undefined;
     //PENDIENTES DE REVISAR CÓMO DEBEN SER
-    formularioNuevoProducto.cod_marca = '';
-    formularioNuevoProducto.activo = '';
+    formularioNuevoProducto.cod_marca = undefined;
+    formularioNuevoProducto.categorias = [];
 
     archivoImagen.value = null;
     errorFormularioAgregar.value = '';
@@ -72,9 +74,10 @@ async function guardarProducto() {
         let archivoBase64 = '';
         if (archivoImagen.value) {
             nombreArchivo = archivoImagen.value.name
-            archivoBase64 = await new Promise<string>((resolve) => {
+            archivoBase64 = await new Promise<string>((resolve, reject) => {
                 const reader = new FileReader()
-                reader.onload = (event: any) => resolve(event.target.result)
+                reader.onload = () => resolve(reader.result as string)
+                reader.onerror = () => reject(new Error('No se pudo leer la imagen'))
                 reader.readAsDataURL(archivoImagen.value!)
             })
         }
@@ -87,9 +90,8 @@ async function guardarProducto() {
                 stock: formularioNuevoProducto.stock,
                 stock_critico: formularioNuevoProducto.stock_critico,
                 precio_unitario: formularioNuevoProducto.precio_unitario,
-                //PENDIENTES DE REVISAR CÓMO DEBEN SER
                 cod_marca: formularioNuevoProducto.cod_marca,
-                activo: formularioNuevoProducto.activo,
+                categorias: formularioNuevoProducto.categorias,
 
                 nombreArchivo: nombreArchivo,
                 archivoBase64: archivoBase64,
@@ -177,9 +179,13 @@ const columns: TableColumn<Producto>[] = [
     { accessorKey: 'stock_critico', header: 'Stock Crítico', meta: { class: { th: 'text-center', td: 'text-center' } } },
     { accessorKey: 'precio_unitario', header: 'Precio Unitario', meta: { class: { th: 'text-center', td: 'text-center' } } },
     { accessorKey: 'cod_marca', header: 'Código Marca', meta: { class: { th: 'text-center', td: 'text-center' } } },
-    { accessorKey: 'activo', header: 'Estado', meta: { class: { th: 'text-center', td: 'text-center' } } },
-    { accessorKey: 'imagen', header: 'Imagen', meta: { class: { th: 'text-center', td: 'text-center' } } },
-
+    {
+        accessorKey: 'categorias',
+        header: 'Categorías',
+        meta: { class: { th: 'text-center', td: 'text-center' } },
+        cell: ({ row }) =>
+            row.original.categorias?.map(c => c.categoria?.nom_categoria).join(', ') || 'Sin categorías'
+    },
     // columnas extras
     { id: 'eliminar', header: 'Eliminar', meta: { class: { th: 'text-center', td: 'text-center' } } },
 ]
@@ -227,12 +233,12 @@ const tableMeta = createTableMeta<Producto>()
             <UForm class="space-y-4" :state="formularioNuevoProducto" :schema="validarCrearProducto"
                 @submit.prevent="guardarProducto">
                 <!-- Nombre producto -->
-                <UFormField label="Nombre" name="titulo" :ui="{ label: colorTextoFormulario }">
+                <UFormField label="Nombre" name="nom_producto" :ui="{ label: colorTextoFormulario }">
                     <UInput v-model="formularioNuevoProducto.nom_producto" class="w-full"
                         placeholder="Ej: Master Cat Salmón Adultos 20 KG" :ui="{ base: colorFondoCamposFormulario }" />
                 </UFormField>
                 <!-- Descripción -->
-                <UFormField label="Descripción producto" name="descripcion" :ui="{ label: colorTextoFormulario }">
+                <UFormField label="Descripción producto" name="desc_producto" :ui="{ label: colorTextoFormulario }">
                     <UInput v-model="formularioNuevoProducto.desc_producto" class="w-full"
                         placeholder="Ej: Contiene fibras naturales que promueven una digestión sana y estimulan el desplazamiento de las bolas de pelo a través del sistema digestivo, previniendo el estreñimiento en tu gato. Además contiene Omega 3 que permite mantener una piel sana y un pelaje brillante."
                         :ui="{ base: colorFondoCamposFormulario }" />
@@ -249,11 +255,29 @@ const tableMeta = createTableMeta<Producto>()
                 </UFormField>
                 <!-- Precio unitario -->
                 <UFormField label="Precio unitario" name="precio_unitario" :ui="{ label: colorTextoFormulario }">
-                    <UInput v-model="formularioNuevoProducto.precio_unitario" class="w-full" placeholder="Ej: $42.990"
+                    <UInput v-model="formularioNuevoProducto.precio_unitario" class="w-full" placeholder="Ej: 42990"
                         :ui="{ base: colorFondoCamposFormulario }" />
                 </UFormField>
                 <!-- Cod marca -->
-                <!-- Estado: activo o inactivo (boolean) -->
+                <UFormField label="Marca" name="cod_marca" :ui="{ label: colorTextoFormulario }">
+                    <USelectMenu v-model="formularioNuevoProducto.cod_marca" :items="marcas ?? []" value-key="cod_marca"
+                        label-key="nom_marca" placeholder="Seleccione una marca" class="w-full" :ui="{
+                            base: colorFondoCamposFormulario + ' hover:bg-fondo-general hover:ring-boton transition-colors',
+                            content: 'bg-fondo-card border border-fondo-login',
+                            item: 'text-texto data-highlighted:before:bg-boton/30'
+                        }" />
+                </UFormField>
+                <!-- Categorías (selección múltiple) -->
+                <UFormField label="Categorías" name="categorias" :ui="{ label: colorTextoFormulario }">
+                    <USelectMenu v-model="formularioNuevoProducto.categorias" :items="categorias ?? []" multiple
+                        value-key="cod_categoria" label-key="nom_categoria"
+                        placeholder="Seleccione una o más categorías" class="w-full" :ui="{
+                            base: colorFondoCamposFormulario + ' hover:bg-fondo-general hover:ring-boton transition-colors',
+                            content: 'bg-fondo-card border border-fondo-login',
+                            item: 'text-texto data-highlighted:before:bg-boton/30'
+                        }" />
+                </UFormField>
+
                 <!-- COSITO PARA AGREGAR IMAGEN -->
                 <UFormField label="Imagen" name="imagen" :ui="{ label: colorTextoFormulario }">
                     <UFileUpload v-model="archivoImagen" accept="image/*" label="Agregue su imagen" class="w-full" :ui="{
@@ -261,6 +285,9 @@ const tableMeta = createTableMeta<Producto>()
                         label: 'text-texto'
                     }" />
                 </UFormField>
+                <UAlert v-if="errorFormularioAgregar" color="error" variant="subtle" title="No se pudo guardar"
+                    :description="errorFormularioAgregar" />
+
                 <!-- div de botones cancelar y agregar -->
                 <div class="flex items-center justify-between gap-4 p-2">
                     <!-- Boton cancelar -->
@@ -283,7 +310,7 @@ const tableMeta = createTableMeta<Producto>()
         <!-- MODAL PARA ELIMINAR PRODUCTOS -->
         <!-- CONFIRMAR BORRAR PRODUCTO -->
         <Popups v-model:open="mostrarConfirmacionBorrar" title="Borrar administrador"
-            :description="productoBorrar ? `¿Estas seguro que deseas borrar a ${productoBorrar.nom_producto} ${productoBorrar.cod_producto}? Esta decisión es permanente` : ''">
+            :description="productoBorrar ? `¿Estas seguro que deseas borrar a ${productoBorrar.nom_producto}? Esta decisión es permanente` : ''">
             <!-- div con los 2 botones para cancelar o confirmar -->
             <div class="flex justify-between items-center gap-6">
                 <!-- cancelar -->
@@ -291,7 +318,7 @@ const tableMeta = createTableMeta<Producto>()
                     class="w-full bg-boton text-texto text-center justify-center py-2 px-4 rounded-md hover:bg-boton-hover font-bold transition-colors"
                     type="button">Cancelar</UButton>
                 <!-- confirmar -->
-                <UButton @click="productoBorrar"
+                <UButton @click="borrarProducto"
                     class="w-full bg-boton-eliminar text-white text-center justify-center py-2 px-4 rounded-md hover:bg-boton-eliminar-hover font-bold transition-colors"
                     type="button" :loading="borrandoProducto">Confirmar</UButton>
             </div>
