@@ -7,14 +7,20 @@ const { user, clear } = useUserSession();
 
 const navegacion = [
     { label: 'Inicio', to: '/' },
-    { label: 'Login', to: '/Login' },
+    { label: 'Productos', to: '/' },
+    { label: 'Marcas', to: '/' },
+    { label: 'Perros', to: '/' },
+    { label: 'Gatos', to: '/' },
+    { label: 'FAQ', to: '/' },
+    { label: 'AGREGAR PRODUCTO', to: '/addProductos' },
+    { label: 'Login', to: '/login' },
 ]
 
 </script>
 
 <template>
     <!-- NAV BAR -->
-    <div class="w-full z-50 bg-fondo-general sticky top-0 px-6 py-6 shadow-xl">
+    <div class="w-full z-50 bg-navbar sticky top-0 px-6 py-6 shadow-xl">
         <!-- para que solo use el contenido dentro de esto -->
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center gap-2 sm:justify-between">
             <!-- TEXTO NAVBAR y para poner logo en caso de que haga falta -->
@@ -26,8 +32,8 @@ const navegacion = [
                 <!-- botones para ir a lugares -->
                 <nav class="flex flex-wrap items-center justify-center gap-5">
                     <NuxtLink v-for="link in navegacion" :key="link.to" :to="link.to"
-                        :class="isActive(link.to) ? 'bg-boton text-texto font-bold' : 'text-texto/70 hover:bg-boton font-semibold'"
-                        class="text-sm py-1 px-2 rounded-xl">
+                        class="px-2 py-1 rounded-lg text-sm hover:bg-boton-hover"
+                        :class="isActive(link.to) ? 'bg-boton text-texto-login-admin font-bold' : 'text-texto/70 hover:bg-boton font-semibold'">
                         {{ link.label }}
                     </NuxtLink>
                 </nav>

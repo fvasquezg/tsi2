@@ -4,8 +4,11 @@
 @theme {
   /* Fondos */
   --color-fondo-login-admin: #f9ba1b;
+  /* NAVBAR*/
+  --color-nav-hover: #f5f7fb;
 
   /* Fondos temporales*/
+  --color-navbar: #f9ba1b;
   --color-fondo-general: #f5efef;
   --color-fondo-login: #cbb8a0;
   --color-fondo-card: #f3ebd6;
