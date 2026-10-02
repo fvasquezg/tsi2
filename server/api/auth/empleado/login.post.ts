@@ -33,7 +33,8 @@ export default defineEventHandler(async (event) => {
             nombres: empleado.nombres,
             ap_paterno: empleado.ap_paterno,
             ap_materno: empleado.ap_materno,
-            rol: empleado.tipo_cuenta,
+            tipo_cuenta: empleado.tipo_cuenta,
+            activa: empleado.activa
         }
     });
     return { ok: true };

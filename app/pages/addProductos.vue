@@ -6,6 +6,9 @@ import type { Categoria } from '~/types/categoria';
 import { z } from 'zod';
 
 //definPageMeta -->   definePageMeta({middleware: ['RELLENAR']})
+definePageMeta({
+    middleware: ['empleado']
+})
 
 //constValidarCrearProducto = z.object
 const validarCrearProducto = z.object({
@@ -135,7 +138,7 @@ async function borrarProducto() {
     try {
         await $fetch(`/api/productos/${productoBorrar.value?.cod_producto}`, {
             //PENDIENTE
-            //method: 'DELETE'
+            method: 'DELETE'
         })
         cerrarConfirmacionBorrar();
         await refresh();
@@ -152,7 +155,7 @@ async function borrarProducto() {
         })
 
     } catch (err: any) {
-        errorFormularioAgregar.value = getApiErrorMessage(err, 'No se pudo borrar el producto.');
+        errorBorrar.value = getApiErrorMessage(err, 'No se pudo borrar el producto.');
     }
     finally {
         borrandoProducto.value = false;
@@ -187,10 +190,177 @@ const columns: TableColumn<Producto>[] = [
             row.original.categorias?.map(c => c.categoria?.nom_categoria).join(', ') || 'Sin categorías'
     },
     // columnas extras
+    { id: 'editar', header: 'Editar', meta: { class: { th: 'text-center', td: 'text-center' } } },
     { id: 'eliminar', header: 'Eliminar', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { id: 'activo', header: 'Estado', meta: { class: { th: 'text-center', td: 'text-center' } } },
 ]
 
 const tableMeta = createTableMeta<Producto>()
+
+
+
+// TODO LO QUE ES EDITAR COMO TAL
+const mostrarFormularioEditar = ref(false);
+const errorFormularioEditar = ref('');
+const guardandoProductoEditado = ref(false);
+const productoEditando = ref<Producto | null>(null);
+
+//formulario editarProducto
+const formularioEditarProducto = reactive({
+    nom_producto: '',
+    desc_producto: '',
+    stock: undefined as number | undefined,
+    stock_critico: undefined as number | undefined,
+    precio_unitario: undefined as number | undefined,
+    cod_marca: undefined as number | undefined,
+    categorias: [] as number[],
+})
+
+// Para la imagen (editar)
+const archivoImagenEditar = ref<File | null>(null)
+
+// Validacione s zod para editar el produtco
+const validarEditarProducto = z.object({
+    nom_producto: z.string().min(3, 'Debe ingresar nombre del producto'),
+    desc_producto: z.string().min(6, 'Debe ingresar una descripción'),
+    stock: z.coerce.number({ message: 'Debe ser un número' }).int().min(0, 'No puede ser negativo'),
+    stock_critico: z.coerce.number({ message: 'Debe ser un número' }).int().min(0),
+    precio_unitario: z.coerce.number({ message: 'Debe ser un número' }).min(1, 'Debe ser mayor a 0'),
+    cod_marca: z.number({ message: 'Debe seleccionar una marca' }),
+    categorias: z.array(z.number()).min(1, 'Debe seleccionar al menos una categoría'),
+})
+
+// Esto es para que cuando se abra un producto se abra con las cosas cargadas
+function abrirFormularioEditar(producto: Producto) {
+    productoEditando.value = producto;
+    formularioEditarProducto.nom_producto = producto.nom_producto;
+    formularioEditarProducto.desc_producto = producto.desc_producto;
+    formularioEditarProducto.stock = producto.stock;
+    formularioEditarProducto.stock_critico = producto.stock_critico;
+    formularioEditarProducto.precio_unitario = producto.precio_unitario;
+    formularioEditarProducto.cod_marca = producto.cod_marca;
+    formularioEditarProducto.categorias = producto.categorias?.map(c => c.cod_categoria) ?? [];
+
+    archivoImagenEditar.value = null;
+    errorFormularioEditar.value = '';
+    mostrarFormularioEditar.value = true;
+}
+
+//función para reiniciar el formularioEditar
+function reiniciarFormularioEditar() {
+    formularioEditarProducto.nom_producto = '';
+    formularioEditarProducto.desc_producto = '';
+    formularioEditarProducto.stock = undefined;
+    formularioEditarProducto.stock_critico = undefined;
+    formularioEditarProducto.precio_unitario = undefined;
+    formularioEditarProducto.cod_marca = undefined;
+    formularioEditarProducto.categorias = [];
+
+    archivoImagenEditar.value = null;
+    errorFormularioEditar.value = '';
+    productoEditando.value = null;
+}
+
+//función para cerrar el formularioEditar
+function cerrarFormularioEditar() {
+    mostrarFormularioEditar.value = false;
+    reiniciarFormularioEditar();
+}
+
+//función async para guardar la edición del producto
+async function guardarEdicionProducto() {
+    if (!productoEditando.value) return;
+
+    guardandoProductoEditado.value = true;
+    errorFormularioEditar.value = '';
+
+    try {
+        let nombreArchivo = '';
+        let archivoBase64 = '';
+        if (archivoImagenEditar.value) {
+            nombreArchivo = archivoImagenEditar.value.name
+            archivoBase64 = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader()
+                reader.onload = () => resolve(reader.result as string)
+                reader.onerror = () => reject(new Error('No se pudo leer la imagen'))
+                reader.readAsDataURL(archivoImagenEditar.value!)
+            })
+        }
+
+        await $fetch(`/api/productos/${productoEditando.value.cod_producto}`, {
+            method: 'PUT',
+            body: {
+                nom_producto: formularioEditarProducto.nom_producto,
+                desc_producto: formularioEditarProducto.desc_producto,
+                stock: formularioEditarProducto.stock,
+                stock_critico: formularioEditarProducto.stock_critico,
+                precio_unitario: formularioEditarProducto.precio_unitario,
+                cod_marca: formularioEditarProducto.cod_marca,
+                categorias: formularioEditarProducto.categorias,
+
+                nombreArchivo: nombreArchivo,
+                archivoBase64: archivoBase64,
+            }
+        });
+        cerrarFormularioEditar();
+        await refresh();
+
+        useToast().add({
+            duration: 3000,
+            title: 'Actualizado correctamente',
+            description: 'El producto ha sido actualizado correctamente.',
+            ui: {
+                root: 'bg-fondo-card border border-fondo-login',
+                title: 'text-texto font-bold',
+                description: 'text-texto-formulario'
+            }
+        })
+    } catch (err: any) {
+        errorFormularioEditar.value = getApiErrorMessage(err, 'No se pudo actualizar el producto.');
+    }
+    finally {
+        guardandoProductoEditado.value = false;
+    }
+}
+
+// Ahora todo lo que es cambiar el estado de un producto
+// para controlar el estado de guardado mientras se cambia el switch de una fila
+const cambiandoEstado = ref<number | null>(null);
+
+//función async para activar o desactivar un producto
+async function cambiarEstadoProducto(producto: Producto, nuevoEstado: boolean) {
+    cambiandoEstado.value = producto.cod_producto;
+
+    try {
+        await $fetch(`/api/productos/${producto.cod_producto}/activo`, {
+            method: 'PATCH',
+            body: { activo: nuevoEstado }
+        });
+        await refresh();
+
+        useToast().add({
+            duration: 3000,
+            title: nuevoEstado ? 'Producto activado' : 'Producto desactivado',
+            description: `El producto ${producto.nom_producto} se ${nuevoEstado ? 'activo' : 'desactivo'}.`,
+            ui: {
+                root: 'bg-fondo-card border border-fondo-login',
+                title: 'text-texto font-bold',
+                description: 'text-texto-formulario'
+            }
+        })
+    } catch (err: any) {
+        useToast().add({
+            duration: 3000,
+            color: 'error',
+            title: 'No se pudo cambiar el estado',
+            description: getApiErrorMessage(err, 'Ocurrió un error al actualizar el estado.'),
+        })
+    }
+    finally {
+        cambiandoEstado.value = null;
+    }
+}
+
 </script>
 <template>
     <div class="space-y-8">
@@ -220,12 +390,27 @@ const tableMeta = createTableMeta<Producto>()
                     td: 'text-texto'
                 }">
 
-                <!-- columna extra -->
+                <!-- columna extra editar -->
+                <template #editar-cell="{ row }">
+                    <UButton icon="i-lucide-pencil" size="md" color="neutral" variant="solid"
+                        class="bg-boton hover:bg-boton-hover focus:outline-none focus:ring-0 text-texto"
+                        @click="abrirFormularioEditar(row.original)" />
+                </template>
+
+                <!-- columna extra eliminar -->
                 <template #eliminar-cell="{ row }">
                     <UButton icon="i-lucide-trash-2" size="md" color="neutral" variant="solid"
                         class="bg-boton-eliminar hover:bg-boton-eliminar-hover focus:outline-none focus:ring-0 text-white"
                         @click="confirmarBorrarProducto(row.original)" />
                 </template>
+
+                <!-- columna extra activar desactivar -->
+                <template #activo-cell="{ row }">
+                    <USwitch :model-value="row.original.activo" :loading="cambiandoEstado === row.original.cod_producto"
+                        :disabled="cambiandoEstado === row.original.cod_producto"
+                        @update:model-value="(valor) => cambiarEstadoProducto(row.original, valor)" color="primary" />
+                </template>
+
             </UTable>
         </section>
         <!-- FORMULARIO PARA AGREGAR PRODUCTOS -->
@@ -311,6 +496,12 @@ const tableMeta = createTableMeta<Producto>()
         <!-- CONFIRMAR BORRAR PRODUCTO -->
         <Popups v-model:open="mostrarConfirmacionBorrar" title="Borrar administrador"
             :description="productoBorrar ? `¿Estas seguro que deseas borrar a ${productoBorrar.nom_producto}? Esta decisión es permanente` : ''">
+
+            <!-- Ualert por si falla algo al borrar -->
+            <UAlert v-if="errorBorrar" color="error" variant="subtle" title="No se pudo eliminar"
+                :description="errorBorrar" class="mb-4" />
+
+
             <!-- div con los 2 botones para cancelar o confirmar -->
             <div class="flex justify-between items-center gap-6">
                 <!-- cancelar -->
@@ -322,6 +513,84 @@ const tableMeta = createTableMeta<Producto>()
                     class="w-full bg-boton-eliminar text-white text-center justify-center py-2 px-4 rounded-md hover:bg-boton-eliminar-hover font-bold transition-colors"
                     type="button" :loading="borrandoProducto">Confirmar</UButton>
             </div>
+        </Popups>
+
+        <!-- MODAL PARA ACTUALIZAR PRODUCTOS -->
+        <Popups v-model:open="mostrarFormularioEditar" title="Editar producto">
+            <UForm class="space-y-4" :state="formularioEditarProducto" :schema="validarEditarProducto"
+                @submit.prevent="guardarEdicionProducto">
+                <!-- Nombre producto -->
+                <UFormField label="Nombre" name="nom_producto" :ui="{ label: colorTextoFormulario }">
+                    <UInput v-model="formularioEditarProducto.nom_producto" class="w-full"
+                        placeholder="Ej: Master Cat Salmón Adultos 20 KG" :ui="{ base: colorFondoCamposFormulario }" />
+                </UFormField>
+                <!-- Descripción -->
+                <UFormField label="Descripción producto" name="desc_producto" :ui="{ label: colorTextoFormulario }">
+                    <UInput v-model="formularioEditarProducto.desc_producto" class="w-full"
+                        :ui="{ base: colorFondoCamposFormulario }" />
+                </UFormField>
+                <!-- Stock -->
+                <UFormField label="Stock" name="stock" :ui="{ label: colorTextoFormulario }">
+                    <UInput v-model="formularioEditarProducto.stock" class="w-full"
+                        :ui="{ base: colorFondoCamposFormulario }" />
+                </UFormField>
+                <!-- Stock crítico -->
+                <UFormField label="Stock crítico" name="stock_critico" :ui="{ label: colorTextoFormulario }">
+                    <UInput v-model="formularioEditarProducto.stock_critico" class="w-full"
+                        :ui="{ base: colorFondoCamposFormulario }" />
+                </UFormField>
+                <!-- Precio unitario -->
+                <UFormField label="Precio unitario" name="precio_unitario" :ui="{ label: colorTextoFormulario }">
+                    <UInput v-model="formularioEditarProducto.precio_unitario" class="w-full"
+                        :ui="{ base: colorFondoCamposFormulario }" />
+                </UFormField>
+                <!-- Cod marca -->
+                <UFormField label="Marca" name="cod_marca" :ui="{ label: colorTextoFormulario }">
+                    <USelectMenu v-model="formularioEditarProducto.cod_marca" :items="marcas ?? []"
+                        value-key="cod_marca" label-key="nom_marca" placeholder="Seleccione una marca" class="w-full"
+                        :ui="{
+                            base: colorFondoCamposFormulario + ' hover:bg-fondo-general hover:ring-boton transition-colors',
+                            content: 'bg-fondo-card border border-fondo-login',
+                            item: 'text-texto data-highlighted:before:bg-boton/30'
+                        }" />
+                </UFormField>
+                <!-- Categorías (selección múltiple) -->
+                <UFormField label="Categorías" name="categorias" :ui="{ label: colorTextoFormulario }">
+                    <USelectMenu v-model="formularioEditarProducto.categorias" :items="categorias ?? []" multiple
+                        value-key="cod_categoria" label-key="nom_categoria"
+                        placeholder="Seleccione una o más categorías" class="w-full" :ui="{
+                            base: colorFondoCamposFormulario + ' hover:bg-fondo-general hover:ring-boton transition-colors',
+                            content: 'bg-fondo-card border border-fondo-login',
+                            item: 'text-texto data-highlighted:before:bg-boton/30'
+                        }" />
+                </UFormField>
+
+                <!-- COSITO PARA AGREGAR IMAGEN -->
+                <UFormField label="Imagen nueva (opcional)" name="imagen" :ui="{ label: colorTextoFormulario }">
+                    <UFileUpload v-model="archivoImagenEditar" accept="image/*"
+                        label="Deje vacío para mantener la imagen actual" class="w-full" :ui="{
+                            base: 'bg-fondo-general/90 hover:bg-fondo-general/70 transition-colors',
+                            label: 'text-texto'
+                        }" />
+                </UFormField>
+                <UAlert v-if="errorFormularioEditar" color="error" variant="subtle" title="No se pudo guardar"
+                    :description="errorFormularioEditar" />
+
+                <!-- div de botones cancelar y guardar -->
+                <div class="flex items-center justify-between gap-4 p-2">
+                    <!-- Boton cancelar -->
+                    <UButton type="button" @click="cerrarFormularioEditar"
+                        class="bg-boton text-texto py-2 px-4 rounded-md hover:bg-boton-hover font-bold transition-colors">
+                        Cancelar
+                    </UButton>
+
+                    <!-- Boton guardar -->
+                    <UButton type="submit" :loading="guardandoProductoEditado"
+                        class="bg-boton text-texto py-2 px-4 rounded-md hover:bg-boton-hover font-bold transition-colors">
+                        Guardar Cambios
+                    </UButton>
+                </div>
+            </UForm>
         </Popups>
     </div>
 </template>

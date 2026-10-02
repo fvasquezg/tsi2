@@ -3,7 +3,8 @@ export interface Empleado{
     nombres: string
     ap_paterno: string    
     ap_materno: string
-    tipo_cuenta: string
+    tipo_cuenta: number
+    activo: boolean;
 }
 
 //tipo cuenta no sería number? no falta la id y el activo o no?

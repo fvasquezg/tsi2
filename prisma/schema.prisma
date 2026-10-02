@@ -43,7 +43,7 @@ model CategoriaProducto {
   cod_producto Int @db.SmallInt
   cod_categoria Int @db.TinyInt
 
-  producto Producto @relation(fields: [cod_producto], references: [cod_producto])
+  producto Producto @relation(fields: [cod_producto], references: [cod_producto], onDelete: Cascade)
   categoria Categoria @relation(fields: [cod_categoria], references: [cod_categoria])
 
   @@id([cod_producto, cod_categoria])

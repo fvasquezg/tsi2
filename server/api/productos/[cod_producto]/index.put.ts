@@ -3,16 +3,35 @@ import fs from 'node:fs'
 export default defineEventHandler(async (event) => {
     const cod_producto = Number(getRouterParam(event, 'cod_producto'))
 
-    // si no mandaron un código de producto, se devuelve un error
     if (!cod_producto) {
         throw createError({ statusCode: 400, message: 'Código de producto inválido' })
     }
 
     // extraer los datos del formulario del producto
-    const { nom_producto, desc_producto, stock, stock_critico, precio_unitario, cod_marca, nombreArchivo, archivoBase64 } = await readBody(event)
+    const { nom_producto, desc_producto, stock, stock_critico, precio_unitario, cod_marca, nombreArchivo, archivoBase64, categorias } = await readBody(event)
 
-    const nom_productoNormalizado = typeof nom_producto === 'string' ? nom_producto.trim(): '';
-    const desc_productoNormalizado = typeof desc_producto === 'string' ? desc_producto.trim(): '';
+    // validar que venga al menos una categoria
+    if (!categorias?.length) {
+        throw createError({ statusCode: 400, message: 'Debe seleccionar al menos una categoría' })
+    }
+
+    const nom_productoNormalizado = typeof nom_producto === 'string' ? nom_producto.trim() : '';
+    const desc_productoNormalizado = typeof desc_producto === 'string' ? desc_producto.trim() : '';
+
+    // convertir a número los campos numéricos (llegan como texto desde el formulario)
+    const stockNumero = Number(stock)
+    const stockCriticoNumero = Number(stock_critico)
+    const precioNumero = Number(precio_unitario)
+    const codMarcaNumero = Number(cod_marca)
+
+    // validar que realmente sean números válidos
+    if (
+        !Number.isInteger(stockNumero) ||
+        !Number.isInteger(stockCriticoNumero) ||
+        !Number.isFinite(precioNumero)
+    ) {
+        throw createError({ statusCode: 400, message: 'Stock, stock crítico y precio deben ser números válidos' })
+    }
 
     // si mandaron una imagen nueva, se guarda y se reemplaza la ruta
     // si no, se deja la imagen que el producto ya tenía
@@ -33,12 +52,16 @@ export default defineEventHandler(async (event) => {
             data: {
                 nom_producto: nom_productoNormalizado,
                 desc_producto: desc_productoNormalizado,
-                stock,
-                stock_critico,
-                precio_unitario,
-                cod_marca,
-                // los 3 puntos de aca es para indicar que es opcional.
-                ...datosImagen
+                stock: stockNumero,
+                stock_critico: stockCriticoNumero,
+                precio_unitario: precioNumero,
+                cod_marca: codMarcaNumero,
+                ...datosImagen,
+                // borra todas las categorias que tenia y crea las nuevas que mandaron
+                categorias: {
+                    deleteMany: {},
+                    create: categorias.map((cod_categoria: number) => ({ cod_categoria }))
+                }
             },
             include: {
                 marca: true,
@@ -55,7 +78,7 @@ export default defineEventHandler(async (event) => {
             throw createError({ statusCode: 404, message: 'El producto no existe' })
         }
         if (err.code === 'P2003') {
-            throw createError({ statusCode: 400, message: 'La marca indicada no existe' })
+            throw createError({ statusCode: 400, message: 'La marca o alguna categoría indicada no existe' })
         }
         throw err
     }

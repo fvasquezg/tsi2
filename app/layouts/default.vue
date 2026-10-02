@@ -20,6 +20,15 @@ const navegacion = [
     { label: 'Gestor productos', to: '/addProductos' },
     { label: 'Login', to: '/login' },
 ]
+
+// Para logout
+async function logout() {
+    await $fetch('/api/auth/empleado/logout', {
+        method: 'POST'
+    });
+    await clear();
+    await navigateTo('/login');
+}
 </script>
 
 <template>
@@ -44,10 +53,18 @@ const navegacion = [
                 </nav>
                 <!-- Donde sale el nombre de usuario y boton cerrar sesión -->
                 <div class="gap-5 flex items-center">
-                    <!-- Nombre y rol -->
-                    <div></div>
+                    <!-- Nombre y rol: se muestra para cualquiera con sesión iniciada -->
+                    <div v-if="user" class="flex flex-col rounded-md border-2 border-boton px-4 py-2">
+                        <span class="text-texto text-md">{{ user.nombres }} {{ user.ap_paterno }} {{ user.ap_materno
+                        }}</span>
+                        <span class="text-texto/70 text-sm">{{ user.tipo_cuenta === 1 ? 'Administrador' : 'Empleado'
+                            }}</span>
+                    </div>
 
-                    <!-- uboton cerrar sesion-->
+                    <UButton v-if="user" @click="logout"
+                        class="bg-amber-200 text-texto py-2 px-4 rounded-xl hover:bg-amber-300 text-md font-bold transition-colors">
+                        Cerrar Sesion
+                    </UButton>
                 </div>
             </div>
         </div>
