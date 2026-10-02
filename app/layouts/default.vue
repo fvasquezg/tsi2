@@ -1,21 +1,25 @@
 <script setup lang="ts">
-//Para ver página actual y las disponibles
 const route = useRoute();
-const isActive = (to: String) => route.path === to;
 const { user, clear } = useUserSession();
 
+// Un link está activo si la ruta coincide exactamente,
+// o si estamos dentro de una subruta (ej: /productos/5 activa /productos).
+// Para '/' solo cuenta la coincidencia exacta, si no siempre estará activo.
+function isActive(to: string): boolean {
+    if (to === '/') return route.path === '/'
+    return route.path === to || route.path.startsWith(`${to}/`)
+}
 
 const navegacion = [
     { label: 'Inicio', to: '/' },
-    { label: 'Productos', to: '/' },
-    { label: 'Marcas', to: '/' },
-    { label: 'Perros', to: '/' },
-    { label: 'Gatos', to: '/' },
-    { label: 'FAQ', to: '/' },
-    { label: 'AGREGAR PRODUCTO', to: '/addProductos' },
+    { label: 'Productos', to: '/productos' },
+    { label: 'Marcas', to: '/marcas' },
+    { label: 'Perros', to: '/perros' },
+    { label: 'Gatos', to: '/gatos' },
+    { label: 'FAQ', to: '/faq' },
+    { label: 'Gestor productos', to: '/addProductos' },
     { label: 'Login', to: '/login' },
 ]
-
 </script>
 
 <template>
@@ -31,9 +35,10 @@ const navegacion = [
             <div class="flex flex-col gap-5 sm:flex-row items-center">
                 <!-- botones para ir a lugares -->
                 <nav class="flex flex-wrap items-center justify-center gap-5">
-                    <NuxtLink v-for="link in navegacion" :key="link.to" :to="link.to"
-                        class="px-2 py-1 rounded-lg text-sm hover:bg-boton-hover"
-                        :class="isActive(link.to) ? 'bg-boton text-texto-login-admin font-bold' : 'text-texto/70 hover:bg-boton font-semibold'">
+                    <NuxtLink v-for="link in navegacion" :key="link.label" :to="link.to"
+                        class="px-3 py-1 rounded-lg text-sm transition-colors" :class="isActive(link.to)
+                            ? 'bg-boton text-texto-login-admin font-bold'
+                            : 'text-texto font-semibold hover:bg-boton-hover'">
                         {{ link.label }}
                     </NuxtLink>
                 </nav>
