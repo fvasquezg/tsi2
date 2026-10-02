@@ -31,7 +31,7 @@ async function login() {
         })
         await fetchSession();
         //redireccionar a la pagina de cuentas
-        navigateTo('/index');
+        navigateTo('/addProductos');
     } catch (err: any) {
         errorFormulario.value = getApiErrorMessage(err, "No se pudo iniciar sesión");
     }
@@ -47,7 +47,12 @@ const colorFondoCamposFormulario = 'bg-fondo-login-admin/10 text-texto-login-adm
 </script>
 
 <template>
-    <div class="flex min-h-screen items-center justify-center">
+    <div class="relative flex min-h-screen items-center justify-center">
+        <!-- Botón para volver al inicio-->
+        <UButton to="/" icon="i-lucide-arrow-left" variant="ghost"
+            class="absolute top-6 left-6 md:top-8 md:left-8 text-texto-login-admin font-semibold hover:bg-fondo-login-admin/10 transition-colors">
+            Volver al inicio
+        </UButton>
         <!-- div donde salen todas las cosas del login -->
         <div
             class="rounded-2xl bg-white flex flex-col items-center px-4 sm:px-6 md:px-12 py-4 sm:py-6 md:py-8 border-2 border-borde-login-admin shadow-2xl max-w-sm">
@@ -70,7 +75,7 @@ const colorFondoCamposFormulario = 'bg-fondo-login-admin/10 text-texto-login-adm
 
                 <!-- Mensaje de error  -->
                 <p v-if="errorFormulario" class="text-red-500 text-sm text-center">
-                    Error, no se ha podido iniciar sesión. Por favor, verifique sus credenciales e intente nuevamente.
+                    No se ha podido iniciar sesión. Por favor, verifique sus credenciales e intente nuevamente.
                 </p>
 
                 <!-- Boton de iniciar sesion -->
