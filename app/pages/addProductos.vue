@@ -23,7 +23,9 @@ const validarCrearProducto = z.object({
 })
 
 // para tomar la informacion de los productos en la tabla producto
-const { data: productos, pending, error, refresh } = await useFetch<Producto[]>('/api/productos')
+const { data: productos, pending: cargandoProductos, error: errorProductos, refresh } = await useFetch<Producto[]>('/api/productos')
+
+//const { data: productos, pending, error, refresh } = await useFetch<Producto[]>('/api/productos')
 const { data: marcas } = await useFetch<Marca[]>('/api/marcas')
 const { data: categorias } = await useFetch<Categoria[]>('/api/categorias')
 
@@ -114,7 +116,7 @@ async function guardarProducto() {
             }
         })
     } catch (err: any) {
-        errorFormularioAgregar.value = getApiErrorMessage(err, 'No se pudgo agregar el producto.');
+        errorFormularioAgregar.value = getApiErrorMessage(err, 'No se pudo agregar el producto.');
     }
     finally {
         guardandoNuevoProducto.value = false;
@@ -166,6 +168,7 @@ async function borrarProducto() {
 function confirmarBorrarProducto(producto: Producto) {
     productoBorrar.value = producto;
     mostrarConfirmacionBorrar.value = true;
+    errorBorrar.value = '';
 }
 //para cerrar confirmación
 function cerrarConfirmacionBorrar() {
@@ -175,13 +178,18 @@ function cerrarConfirmacionBorrar() {
 
 //PARA LA TABLA
 const columns: TableColumn<Producto>[] = [
-    { accessorKey: 'cod_producto', header: 'Código Producto', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { accessorKey: 'cod_producto', header: 'Código', meta: { class: { th: 'text-center', td: 'text-center' } } },
     { accessorKey: 'nom_producto', header: 'Nombre', meta: { class: { th: 'text-center', td: 'text-center' } } },
-    { accessorKey: 'desc_producto', header: 'Descripción', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    {
+        accessorKey: 'desc_producto',
+        header: 'Descripción',
+        meta: { class: { th: 'text-center', td: 'text-center max-w-48 truncate' } },
+        cell: ({ row }) => h('span', { title: row.original.desc_producto }, row.original.desc_producto)
+    },
     { accessorKey: 'stock', header: 'Stock', meta: { class: { th: 'text-center', td: 'text-center' } } },
     { accessorKey: 'stock_critico', header: 'Stock Crítico', meta: { class: { th: 'text-center', td: 'text-center' } } },
     { accessorKey: 'precio_unitario', header: 'Precio Unitario', meta: { class: { th: 'text-center', td: 'text-center' } } },
-    { accessorKey: 'cod_marca', header: 'Código Marca', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { accessorKey: 'marca.nom_marca', header: 'Marca', meta: { class: { th: 'text-center', td: 'text-center' } } },
     {
         accessorKey: 'categorias',
         header: 'Categorías',
@@ -341,7 +349,7 @@ async function cambiarEstadoProducto(producto: Producto, nuevoEstado: boolean) {
         useToast().add({
             duration: 3000,
             title: nuevoEstado ? 'Producto activado' : 'Producto desactivado',
-            description: `El producto ${producto.nom_producto} se ${nuevoEstado ? 'activo' : 'desactivo'}.`,
+            description: `El producto ${producto.nom_producto} se ${nuevoEstado ? 'activó' : 'desactivó'}.`,
             ui: {
                 root: 'bg-fondo-card border border-fondo-login',
                 title: 'text-texto font-bold',
@@ -359,6 +367,29 @@ async function cambiarEstadoProducto(producto: Producto, nuevoEstado: boolean) {
     finally {
         cambiandoEstado.value = null;
     }
+}
+
+//FILTRO PARA CONSULTAS
+// Filtros
+const busqueda = ref('')
+const categoriaSeleccionada = ref<number | null>(null)
+
+// Productos que se muestran: filtrados por texto y por categoría (incluye inactivos)
+const productosFiltrados = computed(() => {
+    const texto = busqueda.value.trim().toLowerCase()
+    return (productos.value ?? []).filter((p) => {
+        const coincideTexto = !texto
+            || p.nom_producto.toLowerCase().includes(texto)
+            || p.desc_producto.toLowerCase().includes(texto)
+        const coincideCategoria = categoriaSeleccionada.value === null
+            || p.categorias?.some(c => c.cod_categoria === categoriaSeleccionada.value)
+        return coincideTexto && coincideCategoria
+    })
+})
+
+function limpiarFiltros() {
+    busqueda.value = ''
+    categoriaSeleccionada.value = null
 }
 
 </script>
@@ -382,12 +413,52 @@ async function cambiarEstadoProducto(producto: Producto, nuevoEstado: boolean) {
                 Agregar
                 producto</UButton>
         </section>
+
+        <!-- Buscador -->
+        <UInput v-model="busqueda" icon="i-lucide-search" class="w-full"
+            placeholder="Buscar por nombre o descripción..."
+            :ui="{ base: 'bg-fondo-general/90 text-texto-formulario focus-visible:ring-boton' }" />
+
+        <!-- Botones de categorías -->
+        <div class="flex flex-wrap gap-2">
+            <button type="button" @click="categoriaSeleccionada = null"
+                class="px-4 py-1.5 rounded-lg text-sm transition-colors" :class="categoriaSeleccionada === null
+                    ? 'bg-boton text-texto-login-admin font-bold'
+                    : 'bg-fondo-card border border-fondo-login text-texto font-semibold hover:bg-boton-hover'">
+                Todos
+            </button>
+            <button v-for="cat in categorias ?? []" :key="cat.cod_categoria" type="button"
+                @click="categoriaSeleccionada = cat.cod_categoria"
+                class="px-4 py-1.5 rounded-lg text-sm transition-colors" :class="categoriaSeleccionada === cat.cod_categoria
+                    ? 'bg-boton text-texto-login-admin font-bold'
+                    : 'bg-fondo-card border border-fondo-login text-texto font-semibold hover:bg-boton-hover'">
+                {{ cat.nom_categoria }}
+            </button>
+        </div>
+
+        <!-- Error al cargar -->
+        <UAlert v-if="errorProductos" color="error" variant="subtle" title="No se pudieron cargar los productos"
+            description="Revise que el servidor y MySQL estén encendidos e intente recargar la página." />
+
+        <!-- Cargando -->
+        <p v-else-if="cargandoProductos" class="text-center text-texto/70">Cargando productos...</p>
+
+        <!-- Sin resultados -->
+        <div v-else-if="productosFiltrados.length === 0"
+            class="rounded-2xl border border-fondo-login bg-fondo-card p-10 text-center space-y-4">
+            <p class="text-lg font-semibold text-texto">No hay productos que coincidan con tu búsqueda.</p>
+            <UButton @click="limpiarFiltros"
+                class="bg-boton hover:bg-boton-hover text-texto py-2 px-4 rounded-md font-bold transition-colors">
+                Limpiar filtros
+            </UButton>
+        </div>
+
         <!-- tabla de usuarios/mantenedor con sus botones en una columna -->
-        <section>
-            <UTable :data="productos" :columns="columns" :meta="tableMeta"
+        <section v-else>
+            <UTable :data="productosFiltrados" :columns="columns" :meta="tableMeta"
                 class="rounded-2xl border border-fondo-login bg-fondo-card" :ui="{
-                    th: 'text-texto font-bold',
-                    td: 'text-texto'
+                    th: 'text-texto font-bold px-2 py-3 text-xs',
+                    td: 'text-texto px-2 py-3 text-sm'
                 }">
 
                 <!-- columna extra editar -->
@@ -494,8 +565,8 @@ async function cambiarEstadoProducto(producto: Producto, nuevoEstado: boolean) {
 
         <!-- MODAL PARA ELIMINAR PRODUCTOS -->
         <!-- CONFIRMAR BORRAR PRODUCTO -->
-        <Popups v-model:open="mostrarConfirmacionBorrar" title="Borrar administrador"
-            :description="productoBorrar ? `¿Estas seguro que deseas borrar a ${productoBorrar.nom_producto}? Esta decisión es permanente` : ''">
+        <Popups v-model:open="mostrarConfirmacionBorrar" title="Borrar producto"
+            :description="productoBorrar ? `¿Está seguro que desea borrar el producto ${productoBorrar.nom_producto}? Esta decisión es permanente` : ''">
 
             <!-- Ualert por si falla algo al borrar -->
             <UAlert v-if="errorBorrar" color="error" variant="subtle" title="No se pudo eliminar"

@@ -92,7 +92,7 @@ function irACatalogo() {
         <section id="catalogo" class="space-y-6 scroll-mt-32">
             <div>
                 <h2 class="text-3xl font-extrabold tracking-tight text-texto">Nuestro catálogo</h2>
-                <p class="mt-2 text-texto/70">Busca un producto o filtra por categoría.</p>
+                <p class="mt-2 text-texto/70">Busque un producto o filtre por categoría..</p>
             </div>
 
             <!-- Buscador -->
@@ -119,7 +119,7 @@ function irACatalogo() {
 
             <!-- Error al cargar -->
             <UAlert v-if="errorProductos" color="error" variant="subtle" title="No se pudieron cargar los productos"
-                description="Revisa que el servidor y MySQL estén encendidos e intenta recargar la página." />
+                description="Revise que el servidor y MySQL estén encendidos e intente recargar la página." />
 
             <!-- Cargando -->
             <p v-else-if="cargandoProductos" class="text-center text-texto/70">Cargando productos...</p>

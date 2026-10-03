@@ -44,10 +44,17 @@ async function main() {
         },
     ]
 
+    // 1) Primero hashear TODAS las contraseñas (esto es lo lento)
+    const empleadosConHash = []
     for (const e of empleados) {
-        // La contraseña se guarda hasheada con 12 saltos, igual que en tu login
-        const hash = await bcrypt.hash(e.contrasena, 12)
+        empleadosConHash.push({
+            ...e,
+            contrasena: await bcrypt.hash(e.contrasena, 12),
+        })
+    }
 
+    // 2) Recién ahora hablar con la base de datos, todo seguido
+    for (const e of empleadosConHash) {
         await prisma.empleado.upsert({
             where: { correo: e.correo },
             update: {},
@@ -56,9 +63,8 @@ async function main() {
                 nombres: e.nombres,
                 ap_paterno: e.ap_paterno,
                 ap_materno: e.ap_materno,
-                contrasena: hash,
+                contrasena: e.contrasena,
                 tipo_cuenta: e.tipo_cuenta,
-                // activa no se escribe: usa su valor por defecto (true)
             },
         })
     }
