@@ -13,49 +13,144 @@ datasource db {
 }
 
 model Marca {
-  cod_marca Int @id @default(autoincrement()) @db.TinyInt
-  nom_marca String @db.VarChar(30)
+  cod_marca Int        @id @default(autoincrement()) @db.TinyInt
+  nom_marca String     @unique @db.VarChar(30)
+  imagen    String?    @db.VarChar(250)
   productos Producto[]
 }
 
-model Producto {
-  cod_producto Int @id @default(autoincrement()) @db.SmallInt
-  nom_producto String @db.VarChar(50)
-  desc_producto String @db.VarChar(255)
-  stock Int @db.SmallInt
-  stock_critico Int @db.SmallInt
-  precio_unitario Int
-  cod_marca Int @db.TinyInt
-  activo Boolean @default(true)
-  imagen String? @db.VarChar(250)
-
-  marca Marca @relation(fields: [cod_marca], references: [cod_marca])
-  categorias CategoriaProducto[]  
+model Categoria {
+  cod_categoria Int                 @id @default(autoincrement()) @db.TinyInt
+  nom_categoria String              @unique @db.VarChar(30)
+  productos     CategoriaProducto[]
 }
 
-model Categoria {
-  cod_categoria Int @id @default(autoincrement()) @db.TinyInt
-  nom_categoria String @db.VarChar(30)
-  productos CategoriaProducto[]
+model Producto {
+  cod_producto    Int     @id @default(autoincrement()) @db.SmallInt
+  nom_producto    String  @unique @db.VarChar(50)
+  desc_producto   String? @db.VarChar(255)
+  stock         Int @db.UnsignedSmallInt // unsigned para que no quede negativo
+  stock_critico Int @db.UnsignedSmallInt
+  precio_unitario Int
+  cod_marca       Int     @db.TinyInt
+  activo          Boolean @default(true)
+  imagen          String? @db.VarChar(250)
+
+  marca      Marca               @relation(fields: [cod_marca], references: [cod_marca])
+  categorias CategoriaProducto[]
+  detalles   DetalleVenta[]
+  ajustes    AjusteStock[]
 }
 
 model CategoriaProducto {
-  cod_producto Int @db.SmallInt
+  cod_producto  Int @db.SmallInt
   cod_categoria Int @db.TinyInt
 
-  producto Producto @relation(fields: [cod_producto], references: [cod_producto], onDelete: Cascade)
+  producto  Producto  @relation(fields: [cod_producto], references: [cod_producto], onDelete: Cascade)
   categoria Categoria @relation(fields: [cod_categoria], references: [cod_categoria])
 
   @@id([cod_producto, cod_categoria])
 }
 
 model Empleado {
-  id_empleado Int @id @default(autoincrement()) @db.TinyInt
-  correo String @unique @db.VarChar(50)
-  nombres String @db.VarChar(50)
-  ap_paterno String @db.VarChar(30)
-  ap_materno String @db.VarChar(30)
-  contrasena String @db.VarChar(255)
-  activa Boolean @default(true)
-  tipo_cuenta Int @db.TinyInt
+  id_empleado Int     @id @default(autoincrement()) @db.TinyInt
+  correo      String  @unique @db.VarChar(50)
+  nombres     String  @db.VarChar(50)
+  ap_paterno  String  @db.VarChar(30)
+  ap_materno  String  @db.VarChar(30)
+  contrasena  String  @db.VarChar(255)
+  activa      Boolean @default(true)
+  tipo_cuenta Int     @db.TinyInt // 0 = Empleado, 1 = Administrador
+
+  ajustes AjusteStock[]
+}
+
+model ComunasHabilitadas {
+  cod_comuna  Int     @id @default(autoincrement()) @db.TinyInt
+  nom_comuna  String  @unique @db.VarChar(50)
+  costo_envio Int     @db.SmallInt
+  dia_desde   Int?    @db.TinyInt // 1 = lunes ... 7 = domingo. null = todos los días
+  dia_hasta   Int?    @db.TinyInt
+  activa      Boolean @default(true)
+
+  clientes Cliente[]
+  envios   Envio[]
+}
+
+model Cliente {
+  id_cliente Int     @id @default(autoincrement()) @db.SmallInt
+  correo     String  @unique @db.VarChar(50)
+  nombres    String  @db.VarChar(50)
+  ap_paterno String  @db.VarChar(30)
+  ap_materno String  @db.VarChar(30)
+  direccion  String  @db.VarChar(100)
+  cod_comuna Int     @db.TinyInt
+  fono       String  @db.VarChar(12)
+  contrasena String  @db.VarChar(255)
+  activa     Boolean @default(true)
+
+  comuna ComunasHabilitadas @relation(fields: [cod_comuna], references: [cod_comuna])
+  ventas Venta[]
+}
+
+model Cupon {
+  cod_cupon            Int     @id @default(autoincrement()) @db.SmallInt
+  codigo               String  @unique @db.VarChar(20)
+  porcentaje_descuento Int     @db.TinyInt
+  activo               Boolean @default(true)
+
+  ventas Venta[]
+}
+
+model Venta {
+  cod_venta    Int      @id @default(autoincrement())
+  fecha        DateTime @default(now()) @db.Date
+  id_cliente   Int      @db.SmallInt
+  total_neto   Int
+  iva          Int      @db.TinyInt
+  total        Int
+  estado       Int      @db.TinyInt // 1 Preparando, 2 En reparto, 3 Entregado, 4 Devuelto
+  cod_cupon    Int?     @db.SmallInt
+  metodo_pago  Int      @db.TinyInt // 1 Débito, 2 Crédito, 3 Transferencia, 4 Efectivo
+  tipo_entrega Int      @db.TinyInt // 1 A domicilio, 2 Retiro en tienda
+
+  cliente  Cliente        @relation(fields: [id_cliente], references: [id_cliente])
+  cupon    Cupon?         @relation(fields: [cod_cupon], references: [cod_cupon])
+  envio    Envio?
+  detalles DetalleVenta[]
+}
+
+model Envio {
+  cod_venta       Int    @id
+  direccion_venta String @db.VarChar(100)
+  cod_comuna      Int    @db.TinyInt
+  costo_envio     Int    @db.SmallInt
+
+  venta  Venta              @relation(fields: [cod_venta], references: [cod_venta])
+  comuna ComunasHabilitadas @relation(fields: [cod_comuna], references: [cod_comuna])
+}
+
+model DetalleVenta {
+  cod_venta       Int
+  cod_producto    Int @db.SmallInt
+  cantidad        Int @db.UnsignedTinyInt // unsigned para qu eno quede negativo
+  precio_unitario Int
+  subtotal        Int
+
+  venta    Venta    @relation(fields: [cod_venta], references: [cod_venta])
+  producto Producto @relation(fields: [cod_producto], references: [cod_producto])
+
+  @@id([cod_venta, cod_producto])
+}
+
+model AjusteStock {
+  cod_ajuste   Int      @id @default(autoincrement())
+  cod_producto Int      @db.SmallInt
+  id_empleado  Int      @db.TinyInt
+  fecha        DateTime @default(now()) @db.Date
+  cantidad     Int      @db.SmallInt // positivo suma stock, negativo resta
+  motivo       String   @db.VarChar(50)
+
+  producto Producto @relation(fields: [cod_producto], references: [cod_producto])
+  empleado Empleado @relation(fields: [id_empleado], references: [id_empleado])
 }

@@ -9,8 +9,15 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Marca.js'
-export type * from './models/Producto.js'
 export type * from './models/Categoria.js'
+export type * from './models/Producto.js'
 export type * from './models/CategoriaProducto.js'
 export type * from './models/Empleado.js'
+export type * from './models/ComunasHabilitadas.js'
+export type * from './models/Cliente.js'
+export type * from './models/Cupon.js'
+export type * from './models/Venta.js'
+export type * from './models/Envio.js'
+export type * from './models/DetalleVenta.js'
+export type * from './models/AjusteStock.js'
 export type * from './commonInputTypes.js'

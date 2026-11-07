@@ -310,48 +310,6 @@ export type CategoriaProductoSumOrderByAggregateInput = {
   cod_categoria?: Prisma.SortOrder
 }
 
-export type CategoriaProductoCreateNestedManyWithoutProductoInput = {
-  create?: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutProductoInput, Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput> | Prisma.CategoriaProductoCreateWithoutProductoInput[] | Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput[]
-  connectOrCreate?: Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput | Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput[]
-  createMany?: Prisma.CategoriaProductoCreateManyProductoInputEnvelope
-  connect?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
-}
-
-export type CategoriaProductoUncheckedCreateNestedManyWithoutProductoInput = {
-  create?: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutProductoInput, Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput> | Prisma.CategoriaProductoCreateWithoutProductoInput[] | Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput[]
-  connectOrCreate?: Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput | Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput[]
-  createMany?: Prisma.CategoriaProductoCreateManyProductoInputEnvelope
-  connect?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
-}
-
-export type CategoriaProductoUpdateManyWithoutProductoNestedInput = {
-  create?: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutProductoInput, Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput> | Prisma.CategoriaProductoCreateWithoutProductoInput[] | Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput[]
-  connectOrCreate?: Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput | Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput[]
-  upsert?: Prisma.CategoriaProductoUpsertWithWhereUniqueWithoutProductoInput | Prisma.CategoriaProductoUpsertWithWhereUniqueWithoutProductoInput[]
-  createMany?: Prisma.CategoriaProductoCreateManyProductoInputEnvelope
-  set?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
-  disconnect?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
-  delete?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
-  connect?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
-  update?: Prisma.CategoriaProductoUpdateWithWhereUniqueWithoutProductoInput | Prisma.CategoriaProductoUpdateWithWhereUniqueWithoutProductoInput[]
-  updateMany?: Prisma.CategoriaProductoUpdateManyWithWhereWithoutProductoInput | Prisma.CategoriaProductoUpdateManyWithWhereWithoutProductoInput[]
-  deleteMany?: Prisma.CategoriaProductoScalarWhereInput | Prisma.CategoriaProductoScalarWhereInput[]
-}
-
-export type CategoriaProductoUncheckedUpdateManyWithoutProductoNestedInput = {
-  create?: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutProductoInput, Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput> | Prisma.CategoriaProductoCreateWithoutProductoInput[] | Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput[]
-  connectOrCreate?: Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput | Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput[]
-  upsert?: Prisma.CategoriaProductoUpsertWithWhereUniqueWithoutProductoInput | Prisma.CategoriaProductoUpsertWithWhereUniqueWithoutProductoInput[]
-  createMany?: Prisma.CategoriaProductoCreateManyProductoInputEnvelope
-  set?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
-  disconnect?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
-  delete?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
-  connect?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
-  update?: Prisma.CategoriaProductoUpdateWithWhereUniqueWithoutProductoInput | Prisma.CategoriaProductoUpdateWithWhereUniqueWithoutProductoInput[]
-  updateMany?: Prisma.CategoriaProductoUpdateManyWithWhereWithoutProductoInput | Prisma.CategoriaProductoUpdateManyWithWhereWithoutProductoInput[]
-  deleteMany?: Prisma.CategoriaProductoScalarWhereInput | Prisma.CategoriaProductoScalarWhereInput[]
-}
-
 export type CategoriaProductoCreateNestedManyWithoutCategoriaInput = {
   create?: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutCategoriaInput, Prisma.CategoriaProductoUncheckedCreateWithoutCategoriaInput> | Prisma.CategoriaProductoCreateWithoutCategoriaInput[] | Prisma.CategoriaProductoUncheckedCreateWithoutCategoriaInput[]
   connectOrCreate?: Prisma.CategoriaProductoCreateOrConnectWithoutCategoriaInput | Prisma.CategoriaProductoCreateOrConnectWithoutCategoriaInput[]
@@ -394,46 +352,46 @@ export type CategoriaProductoUncheckedUpdateManyWithoutCategoriaNestedInput = {
   deleteMany?: Prisma.CategoriaProductoScalarWhereInput | Prisma.CategoriaProductoScalarWhereInput[]
 }
 
-export type CategoriaProductoCreateWithoutProductoInput = {
-  categoria: Prisma.CategoriaCreateNestedOneWithoutProductosInput
+export type CategoriaProductoCreateNestedManyWithoutProductoInput = {
+  create?: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutProductoInput, Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput> | Prisma.CategoriaProductoCreateWithoutProductoInput[] | Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput[]
+  connectOrCreate?: Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput | Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput[]
+  createMany?: Prisma.CategoriaProductoCreateManyProductoInputEnvelope
+  connect?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
 }
 
-export type CategoriaProductoUncheckedCreateWithoutProductoInput = {
-  cod_categoria: number
+export type CategoriaProductoUncheckedCreateNestedManyWithoutProductoInput = {
+  create?: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutProductoInput, Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput> | Prisma.CategoriaProductoCreateWithoutProductoInput[] | Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput[]
+  connectOrCreate?: Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput | Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput[]
+  createMany?: Prisma.CategoriaProductoCreateManyProductoInputEnvelope
+  connect?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
 }
 
-export type CategoriaProductoCreateOrConnectWithoutProductoInput = {
-  where: Prisma.CategoriaProductoWhereUniqueInput
-  create: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutProductoInput, Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput>
+export type CategoriaProductoUpdateManyWithoutProductoNestedInput = {
+  create?: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutProductoInput, Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput> | Prisma.CategoriaProductoCreateWithoutProductoInput[] | Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput[]
+  connectOrCreate?: Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput | Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput[]
+  upsert?: Prisma.CategoriaProductoUpsertWithWhereUniqueWithoutProductoInput | Prisma.CategoriaProductoUpsertWithWhereUniqueWithoutProductoInput[]
+  createMany?: Prisma.CategoriaProductoCreateManyProductoInputEnvelope
+  set?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
+  disconnect?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
+  delete?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
+  connect?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
+  update?: Prisma.CategoriaProductoUpdateWithWhereUniqueWithoutProductoInput | Prisma.CategoriaProductoUpdateWithWhereUniqueWithoutProductoInput[]
+  updateMany?: Prisma.CategoriaProductoUpdateManyWithWhereWithoutProductoInput | Prisma.CategoriaProductoUpdateManyWithWhereWithoutProductoInput[]
+  deleteMany?: Prisma.CategoriaProductoScalarWhereInput | Prisma.CategoriaProductoScalarWhereInput[]
 }
 
-export type CategoriaProductoCreateManyProductoInputEnvelope = {
-  data: Prisma.CategoriaProductoCreateManyProductoInput | Prisma.CategoriaProductoCreateManyProductoInput[]
-  skipDuplicates?: boolean
-}
-
-export type CategoriaProductoUpsertWithWhereUniqueWithoutProductoInput = {
-  where: Prisma.CategoriaProductoWhereUniqueInput
-  update: Prisma.XOR<Prisma.CategoriaProductoUpdateWithoutProductoInput, Prisma.CategoriaProductoUncheckedUpdateWithoutProductoInput>
-  create: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutProductoInput, Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput>
-}
-
-export type CategoriaProductoUpdateWithWhereUniqueWithoutProductoInput = {
-  where: Prisma.CategoriaProductoWhereUniqueInput
-  data: Prisma.XOR<Prisma.CategoriaProductoUpdateWithoutProductoInput, Prisma.CategoriaProductoUncheckedUpdateWithoutProductoInput>
-}
-
-export type CategoriaProductoUpdateManyWithWhereWithoutProductoInput = {
-  where: Prisma.CategoriaProductoScalarWhereInput
-  data: Prisma.XOR<Prisma.CategoriaProductoUpdateManyMutationInput, Prisma.CategoriaProductoUncheckedUpdateManyWithoutProductoInput>
-}
-
-export type CategoriaProductoScalarWhereInput = {
-  AND?: Prisma.CategoriaProductoScalarWhereInput | Prisma.CategoriaProductoScalarWhereInput[]
-  OR?: Prisma.CategoriaProductoScalarWhereInput[]
-  NOT?: Prisma.CategoriaProductoScalarWhereInput | Prisma.CategoriaProductoScalarWhereInput[]
-  cod_producto?: Prisma.IntFilter<"CategoriaProducto"> | number
-  cod_categoria?: Prisma.IntFilter<"CategoriaProducto"> | number
+export type CategoriaProductoUncheckedUpdateManyWithoutProductoNestedInput = {
+  create?: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutProductoInput, Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput> | Prisma.CategoriaProductoCreateWithoutProductoInput[] | Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput[]
+  connectOrCreate?: Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput | Prisma.CategoriaProductoCreateOrConnectWithoutProductoInput[]
+  upsert?: Prisma.CategoriaProductoUpsertWithWhereUniqueWithoutProductoInput | Prisma.CategoriaProductoUpsertWithWhereUniqueWithoutProductoInput[]
+  createMany?: Prisma.CategoriaProductoCreateManyProductoInputEnvelope
+  set?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
+  disconnect?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
+  delete?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
+  connect?: Prisma.CategoriaProductoWhereUniqueInput | Prisma.CategoriaProductoWhereUniqueInput[]
+  update?: Prisma.CategoriaProductoUpdateWithWhereUniqueWithoutProductoInput | Prisma.CategoriaProductoUpdateWithWhereUniqueWithoutProductoInput[]
+  updateMany?: Prisma.CategoriaProductoUpdateManyWithWhereWithoutProductoInput | Prisma.CategoriaProductoUpdateManyWithWhereWithoutProductoInput[]
+  deleteMany?: Prisma.CategoriaProductoScalarWhereInput | Prisma.CategoriaProductoScalarWhereInput[]
 }
 
 export type CategoriaProductoCreateWithoutCategoriaInput = {
@@ -470,20 +428,46 @@ export type CategoriaProductoUpdateManyWithWhereWithoutCategoriaInput = {
   data: Prisma.XOR<Prisma.CategoriaProductoUpdateManyMutationInput, Prisma.CategoriaProductoUncheckedUpdateManyWithoutCategoriaInput>
 }
 
-export type CategoriaProductoCreateManyProductoInput = {
+export type CategoriaProductoScalarWhereInput = {
+  AND?: Prisma.CategoriaProductoScalarWhereInput | Prisma.CategoriaProductoScalarWhereInput[]
+  OR?: Prisma.CategoriaProductoScalarWhereInput[]
+  NOT?: Prisma.CategoriaProductoScalarWhereInput | Prisma.CategoriaProductoScalarWhereInput[]
+  cod_producto?: Prisma.IntFilter<"CategoriaProducto"> | number
+  cod_categoria?: Prisma.IntFilter<"CategoriaProducto"> | number
+}
+
+export type CategoriaProductoCreateWithoutProductoInput = {
+  categoria: Prisma.CategoriaCreateNestedOneWithoutProductosInput
+}
+
+export type CategoriaProductoUncheckedCreateWithoutProductoInput = {
   cod_categoria: number
 }
 
-export type CategoriaProductoUpdateWithoutProductoInput = {
-  categoria?: Prisma.CategoriaUpdateOneRequiredWithoutProductosNestedInput
+export type CategoriaProductoCreateOrConnectWithoutProductoInput = {
+  where: Prisma.CategoriaProductoWhereUniqueInput
+  create: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutProductoInput, Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput>
 }
 
-export type CategoriaProductoUncheckedUpdateWithoutProductoInput = {
-  cod_categoria?: Prisma.IntFieldUpdateOperationsInput | number
+export type CategoriaProductoCreateManyProductoInputEnvelope = {
+  data: Prisma.CategoriaProductoCreateManyProductoInput | Prisma.CategoriaProductoCreateManyProductoInput[]
+  skipDuplicates?: boolean
 }
 
-export type CategoriaProductoUncheckedUpdateManyWithoutProductoInput = {
-  cod_categoria?: Prisma.IntFieldUpdateOperationsInput | number
+export type CategoriaProductoUpsertWithWhereUniqueWithoutProductoInput = {
+  where: Prisma.CategoriaProductoWhereUniqueInput
+  update: Prisma.XOR<Prisma.CategoriaProductoUpdateWithoutProductoInput, Prisma.CategoriaProductoUncheckedUpdateWithoutProductoInput>
+  create: Prisma.XOR<Prisma.CategoriaProductoCreateWithoutProductoInput, Prisma.CategoriaProductoUncheckedCreateWithoutProductoInput>
+}
+
+export type CategoriaProductoUpdateWithWhereUniqueWithoutProductoInput = {
+  where: Prisma.CategoriaProductoWhereUniqueInput
+  data: Prisma.XOR<Prisma.CategoriaProductoUpdateWithoutProductoInput, Prisma.CategoriaProductoUncheckedUpdateWithoutProductoInput>
+}
+
+export type CategoriaProductoUpdateManyWithWhereWithoutProductoInput = {
+  where: Prisma.CategoriaProductoScalarWhereInput
+  data: Prisma.XOR<Prisma.CategoriaProductoUpdateManyMutationInput, Prisma.CategoriaProductoUncheckedUpdateManyWithoutProductoInput>
 }
 
 export type CategoriaProductoCreateManyCategoriaInput = {
@@ -500,6 +484,22 @@ export type CategoriaProductoUncheckedUpdateWithoutCategoriaInput = {
 
 export type CategoriaProductoUncheckedUpdateManyWithoutCategoriaInput = {
   cod_producto?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type CategoriaProductoCreateManyProductoInput = {
+  cod_categoria: number
+}
+
+export type CategoriaProductoUpdateWithoutProductoInput = {
+  categoria?: Prisma.CategoriaUpdateOneRequiredWithoutProductosNestedInput
+}
+
+export type CategoriaProductoUncheckedUpdateWithoutProductoInput = {
+  cod_categoria?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type CategoriaProductoUncheckedUpdateManyWithoutProductoInput = {
+  cod_categoria?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 

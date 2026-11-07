@@ -244,6 +244,7 @@ export type EmpleadoWhereInput = {
   contrasena?: Prisma.StringFilter<"Empleado"> | string
   activa?: Prisma.BoolFilter<"Empleado"> | boolean
   tipo_cuenta?: Prisma.IntFilter<"Empleado"> | number
+  ajustes?: Prisma.AjusteStockListRelationFilter
 }
 
 export type EmpleadoOrderByWithRelationInput = {
@@ -255,6 +256,7 @@ export type EmpleadoOrderByWithRelationInput = {
   contrasena?: Prisma.SortOrder
   activa?: Prisma.SortOrder
   tipo_cuenta?: Prisma.SortOrder
+  ajustes?: Prisma.AjusteStockOrderByRelationAggregateInput
   _relevance?: Prisma.EmpleadoOrderByRelevanceInput
 }
 
@@ -270,6 +272,7 @@ export type EmpleadoWhereUniqueInput = Prisma.AtLeast<{
   contrasena?: Prisma.StringFilter<"Empleado"> | string
   activa?: Prisma.BoolFilter<"Empleado"> | boolean
   tipo_cuenta?: Prisma.IntFilter<"Empleado"> | number
+  ajustes?: Prisma.AjusteStockListRelationFilter
 }, "id_empleado" | "correo">
 
 export type EmpleadoOrderByWithAggregationInput = {
@@ -310,6 +313,7 @@ export type EmpleadoCreateInput = {
   contrasena: string
   activa?: boolean
   tipo_cuenta: number
+  ajustes?: Prisma.AjusteStockCreateNestedManyWithoutEmpleadoInput
 }
 
 export type EmpleadoUncheckedCreateInput = {
@@ -321,6 +325,7 @@ export type EmpleadoUncheckedCreateInput = {
   contrasena: string
   activa?: boolean
   tipo_cuenta: number
+  ajustes?: Prisma.AjusteStockUncheckedCreateNestedManyWithoutEmpleadoInput
 }
 
 export type EmpleadoUpdateInput = {
@@ -331,6 +336,7 @@ export type EmpleadoUpdateInput = {
   contrasena?: Prisma.StringFieldUpdateOperationsInput | string
   activa?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tipo_cuenta?: Prisma.IntFieldUpdateOperationsInput | number
+  ajustes?: Prisma.AjusteStockUpdateManyWithoutEmpleadoNestedInput
 }
 
 export type EmpleadoUncheckedUpdateInput = {
@@ -342,6 +348,7 @@ export type EmpleadoUncheckedUpdateInput = {
   contrasena?: Prisma.StringFieldUpdateOperationsInput | string
   activa?: Prisma.BoolFieldUpdateOperationsInput | boolean
   tipo_cuenta?: Prisma.IntFieldUpdateOperationsInput | number
+  ajustes?: Prisma.AjusteStockUncheckedUpdateManyWithoutEmpleadoNestedInput
 }
 
 export type EmpleadoCreateManyInput = {
@@ -425,6 +432,112 @@ export type EmpleadoSumOrderByAggregateInput = {
   tipo_cuenta?: Prisma.SortOrder
 }
 
+export type EmpleadoScalarRelationFilter = {
+  is?: Prisma.EmpleadoWhereInput
+  isNot?: Prisma.EmpleadoWhereInput
+}
+
+export type EmpleadoCreateNestedOneWithoutAjustesInput = {
+  create?: Prisma.XOR<Prisma.EmpleadoCreateWithoutAjustesInput, Prisma.EmpleadoUncheckedCreateWithoutAjustesInput>
+  connectOrCreate?: Prisma.EmpleadoCreateOrConnectWithoutAjustesInput
+  connect?: Prisma.EmpleadoWhereUniqueInput
+}
+
+export type EmpleadoUpdateOneRequiredWithoutAjustesNestedInput = {
+  create?: Prisma.XOR<Prisma.EmpleadoCreateWithoutAjustesInput, Prisma.EmpleadoUncheckedCreateWithoutAjustesInput>
+  connectOrCreate?: Prisma.EmpleadoCreateOrConnectWithoutAjustesInput
+  upsert?: Prisma.EmpleadoUpsertWithoutAjustesInput
+  connect?: Prisma.EmpleadoWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EmpleadoUpdateToOneWithWhereWithoutAjustesInput, Prisma.EmpleadoUpdateWithoutAjustesInput>, Prisma.EmpleadoUncheckedUpdateWithoutAjustesInput>
+}
+
+export type EmpleadoCreateWithoutAjustesInput = {
+  correo: string
+  nombres: string
+  ap_paterno: string
+  ap_materno: string
+  contrasena: string
+  activa?: boolean
+  tipo_cuenta: number
+}
+
+export type EmpleadoUncheckedCreateWithoutAjustesInput = {
+  id_empleado?: number
+  correo: string
+  nombres: string
+  ap_paterno: string
+  ap_materno: string
+  contrasena: string
+  activa?: boolean
+  tipo_cuenta: number
+}
+
+export type EmpleadoCreateOrConnectWithoutAjustesInput = {
+  where: Prisma.EmpleadoWhereUniqueInput
+  create: Prisma.XOR<Prisma.EmpleadoCreateWithoutAjustesInput, Prisma.EmpleadoUncheckedCreateWithoutAjustesInput>
+}
+
+export type EmpleadoUpsertWithoutAjustesInput = {
+  update: Prisma.XOR<Prisma.EmpleadoUpdateWithoutAjustesInput, Prisma.EmpleadoUncheckedUpdateWithoutAjustesInput>
+  create: Prisma.XOR<Prisma.EmpleadoCreateWithoutAjustesInput, Prisma.EmpleadoUncheckedCreateWithoutAjustesInput>
+  where?: Prisma.EmpleadoWhereInput
+}
+
+export type EmpleadoUpdateToOneWithWhereWithoutAjustesInput = {
+  where?: Prisma.EmpleadoWhereInput
+  data: Prisma.XOR<Prisma.EmpleadoUpdateWithoutAjustesInput, Prisma.EmpleadoUncheckedUpdateWithoutAjustesInput>
+}
+
+export type EmpleadoUpdateWithoutAjustesInput = {
+  correo?: Prisma.StringFieldUpdateOperationsInput | string
+  nombres?: Prisma.StringFieldUpdateOperationsInput | string
+  ap_paterno?: Prisma.StringFieldUpdateOperationsInput | string
+  ap_materno?: Prisma.StringFieldUpdateOperationsInput | string
+  contrasena?: Prisma.StringFieldUpdateOperationsInput | string
+  activa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tipo_cuenta?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+export type EmpleadoUncheckedUpdateWithoutAjustesInput = {
+  id_empleado?: Prisma.IntFieldUpdateOperationsInput | number
+  correo?: Prisma.StringFieldUpdateOperationsInput | string
+  nombres?: Prisma.StringFieldUpdateOperationsInput | string
+  ap_paterno?: Prisma.StringFieldUpdateOperationsInput | string
+  ap_materno?: Prisma.StringFieldUpdateOperationsInput | string
+  contrasena?: Prisma.StringFieldUpdateOperationsInput | string
+  activa?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  tipo_cuenta?: Prisma.IntFieldUpdateOperationsInput | number
+}
+
+
+/**
+ * Count Type EmpleadoCountOutputType
+ */
+
+export type EmpleadoCountOutputType = {
+  ajustes: number
+}
+
+export type EmpleadoCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ajustes?: boolean | EmpleadoCountOutputTypeCountAjustesArgs
+}
+
+/**
+ * EmpleadoCountOutputType without action
+ */
+export type EmpleadoCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EmpleadoCountOutputType
+   */
+  select?: Prisma.EmpleadoCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * EmpleadoCountOutputType without action
+ */
+export type EmpleadoCountOutputTypeCountAjustesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AjusteStockWhereInput
+}
 
 
 export type EmpleadoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -436,6 +549,8 @@ export type EmpleadoSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   contrasena?: boolean
   activa?: boolean
   tipo_cuenta?: boolean
+  ajustes?: boolean | Prisma.Empleado$ajustesArgs<ExtArgs>
+  _count?: boolean | Prisma.EmpleadoCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["empleado"]>
 
 
@@ -452,10 +567,16 @@ export type EmpleadoSelectScalar = {
 }
 
 export type EmpleadoOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id_empleado" | "correo" | "nombres" | "ap_paterno" | "ap_materno" | "contrasena" | "activa" | "tipo_cuenta", ExtArgs["result"]["empleado"]>
+export type EmpleadoInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  ajustes?: boolean | Prisma.Empleado$ajustesArgs<ExtArgs>
+  _count?: boolean | Prisma.EmpleadoCountOutputTypeDefaultArgs<ExtArgs>
+}
 
 export type $EmpleadoPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Empleado"
-  objects: {}
+  objects: {
+    ajustes: Prisma.$AjusteStockPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id_empleado: number
     correo: string
@@ -805,6 +926,7 @@ readonly fields: EmpleadoFieldRefs;
  */
 export interface Prisma__EmpleadoClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  ajustes<T extends Prisma.Empleado$ajustesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Empleado$ajustesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AjusteStockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -859,6 +981,10 @@ export type EmpleadoFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   omit?: Prisma.EmpleadoOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmpleadoInclude<ExtArgs> | null
+  /**
    * Filter, which Empleado to fetch.
    */
   where: Prisma.EmpleadoWhereUniqueInput
@@ -877,6 +1003,10 @@ export type EmpleadoFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensio
    */
   omit?: Prisma.EmpleadoOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmpleadoInclude<ExtArgs> | null
+  /**
    * Filter, which Empleado to fetch.
    */
   where: Prisma.EmpleadoWhereUniqueInput
@@ -894,6 +1024,10 @@ export type EmpleadoFindFirstArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Omit specific fields from the Empleado
    */
   omit?: Prisma.EmpleadoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmpleadoInclude<ExtArgs> | null
   /**
    * Filter, which Empleado to fetch.
    */
@@ -943,6 +1077,10 @@ export type EmpleadoFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extension
    */
   omit?: Prisma.EmpleadoOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmpleadoInclude<ExtArgs> | null
+  /**
    * Filter, which Empleado to fetch.
    */
   where?: Prisma.EmpleadoWhereInput
@@ -990,6 +1128,10 @@ export type EmpleadoFindManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Omit specific fields from the Empleado
    */
   omit?: Prisma.EmpleadoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmpleadoInclude<ExtArgs> | null
   /**
    * Filter, which Empleados to fetch.
    */
@@ -1039,6 +1181,10 @@ export type EmpleadoCreateArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.EmpleadoOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmpleadoInclude<ExtArgs> | null
+  /**
    * The data needed to create a Empleado.
    */
   data: Prisma.XOR<Prisma.EmpleadoCreateInput, Prisma.EmpleadoUncheckedCreateInput>
@@ -1067,6 +1213,10 @@ export type EmpleadoUpdateArgs<ExtArgs extends runtime.Types.Extensions.Internal
    * Omit specific fields from the Empleado
    */
   omit?: Prisma.EmpleadoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmpleadoInclude<ExtArgs> | null
   /**
    * The data needed to update a Empleado.
    */
@@ -1108,6 +1258,10 @@ export type EmpleadoUpsertArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.EmpleadoOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmpleadoInclude<ExtArgs> | null
+  /**
    * The filter to search for the Empleado to update in case it exists.
    */
   where: Prisma.EmpleadoWhereUniqueInput
@@ -1134,6 +1288,10 @@ export type EmpleadoDeleteArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.EmpleadoOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmpleadoInclude<ExtArgs> | null
+  /**
    * Filter which Empleado to delete.
    */
   where: Prisma.EmpleadoWhereUniqueInput
@@ -1154,6 +1312,30 @@ export type EmpleadoDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 /**
+ * Empleado.ajustes
+ */
+export type Empleado$ajustesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AjusteStock
+   */
+  select?: Prisma.AjusteStockSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AjusteStock
+   */
+  omit?: Prisma.AjusteStockOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AjusteStockInclude<ExtArgs> | null
+  where?: Prisma.AjusteStockWhereInput
+  orderBy?: Prisma.AjusteStockOrderByWithRelationInput | Prisma.AjusteStockOrderByWithRelationInput[]
+  cursor?: Prisma.AjusteStockWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AjusteStockScalarFieldEnum | Prisma.AjusteStockScalarFieldEnum[]
+}
+
+/**
  * Empleado without action
  */
 export type EmpleadoDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1165,4 +1347,8 @@ export type EmpleadoDefaultArgs<ExtArgs extends runtime.Types.Extensions.Interna
    * Omit specific fields from the Empleado
    */
   omit?: Prisma.EmpleadoOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmpleadoInclude<ExtArgs> | null
 }

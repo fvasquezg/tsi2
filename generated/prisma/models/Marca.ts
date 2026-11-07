@@ -37,16 +37,19 @@ export type MarcaSumAggregateOutputType = {
 export type MarcaMinAggregateOutputType = {
   cod_marca: number | null
   nom_marca: string | null
+  imagen: string | null
 }
 
 export type MarcaMaxAggregateOutputType = {
   cod_marca: number | null
   nom_marca: string | null
+  imagen: string | null
 }
 
 export type MarcaCountAggregateOutputType = {
   cod_marca: number
   nom_marca: number
+  imagen: number
   _all: number
 }
 
@@ -62,16 +65,19 @@ export type MarcaSumAggregateInputType = {
 export type MarcaMinAggregateInputType = {
   cod_marca?: true
   nom_marca?: true
+  imagen?: true
 }
 
 export type MarcaMaxAggregateInputType = {
   cod_marca?: true
   nom_marca?: true
+  imagen?: true
 }
 
 export type MarcaCountAggregateInputType = {
   cod_marca?: true
   nom_marca?: true
+  imagen?: true
   _all?: true
 }
 
@@ -164,6 +170,7 @@ export type MarcaGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type MarcaGroupByOutputType = {
   cod_marca: number
   nom_marca: string
+  imagen: string | null
   _count: MarcaCountAggregateOutputType | null
   _avg: MarcaAvgAggregateOutputType | null
   _sum: MarcaSumAggregateOutputType | null
@@ -192,28 +199,32 @@ export type MarcaWhereInput = {
   NOT?: Prisma.MarcaWhereInput | Prisma.MarcaWhereInput[]
   cod_marca?: Prisma.IntFilter<"Marca"> | number
   nom_marca?: Prisma.StringFilter<"Marca"> | string
+  imagen?: Prisma.StringNullableFilter<"Marca"> | string | null
   productos?: Prisma.ProductoListRelationFilter
 }
 
 export type MarcaOrderByWithRelationInput = {
   cod_marca?: Prisma.SortOrder
   nom_marca?: Prisma.SortOrder
+  imagen?: Prisma.SortOrderInput | Prisma.SortOrder
   productos?: Prisma.ProductoOrderByRelationAggregateInput
   _relevance?: Prisma.MarcaOrderByRelevanceInput
 }
 
 export type MarcaWhereUniqueInput = Prisma.AtLeast<{
   cod_marca?: number
+  nom_marca?: string
   AND?: Prisma.MarcaWhereInput | Prisma.MarcaWhereInput[]
   OR?: Prisma.MarcaWhereInput[]
   NOT?: Prisma.MarcaWhereInput | Prisma.MarcaWhereInput[]
-  nom_marca?: Prisma.StringFilter<"Marca"> | string
+  imagen?: Prisma.StringNullableFilter<"Marca"> | string | null
   productos?: Prisma.ProductoListRelationFilter
-}, "cod_marca">
+}, "cod_marca" | "nom_marca">
 
 export type MarcaOrderByWithAggregationInput = {
   cod_marca?: Prisma.SortOrder
   nom_marca?: Prisma.SortOrder
+  imagen?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.MarcaCountOrderByAggregateInput
   _avg?: Prisma.MarcaAvgOrderByAggregateInput
   _max?: Prisma.MarcaMaxOrderByAggregateInput
@@ -227,42 +238,50 @@ export type MarcaScalarWhereWithAggregatesInput = {
   NOT?: Prisma.MarcaScalarWhereWithAggregatesInput | Prisma.MarcaScalarWhereWithAggregatesInput[]
   cod_marca?: Prisma.IntWithAggregatesFilter<"Marca"> | number
   nom_marca?: Prisma.StringWithAggregatesFilter<"Marca"> | string
+  imagen?: Prisma.StringNullableWithAggregatesFilter<"Marca"> | string | null
 }
 
 export type MarcaCreateInput = {
   nom_marca: string
+  imagen?: string | null
   productos?: Prisma.ProductoCreateNestedManyWithoutMarcaInput
 }
 
 export type MarcaUncheckedCreateInput = {
   cod_marca?: number
   nom_marca: string
+  imagen?: string | null
   productos?: Prisma.ProductoUncheckedCreateNestedManyWithoutMarcaInput
 }
 
 export type MarcaUpdateInput = {
   nom_marca?: Prisma.StringFieldUpdateOperationsInput | string
+  imagen?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   productos?: Prisma.ProductoUpdateManyWithoutMarcaNestedInput
 }
 
 export type MarcaUncheckedUpdateInput = {
   cod_marca?: Prisma.IntFieldUpdateOperationsInput | number
   nom_marca?: Prisma.StringFieldUpdateOperationsInput | string
+  imagen?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   productos?: Prisma.ProductoUncheckedUpdateManyWithoutMarcaNestedInput
 }
 
 export type MarcaCreateManyInput = {
   cod_marca?: number
   nom_marca: string
+  imagen?: string | null
 }
 
 export type MarcaUpdateManyMutationInput = {
   nom_marca?: Prisma.StringFieldUpdateOperationsInput | string
+  imagen?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MarcaUncheckedUpdateManyInput = {
   cod_marca?: Prisma.IntFieldUpdateOperationsInput | number
   nom_marca?: Prisma.StringFieldUpdateOperationsInput | string
+  imagen?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MarcaOrderByRelevanceInput = {
@@ -274,6 +293,7 @@ export type MarcaOrderByRelevanceInput = {
 export type MarcaCountOrderByAggregateInput = {
   cod_marca?: Prisma.SortOrder
   nom_marca?: Prisma.SortOrder
+  imagen?: Prisma.SortOrder
 }
 
 export type MarcaAvgOrderByAggregateInput = {
@@ -283,11 +303,13 @@ export type MarcaAvgOrderByAggregateInput = {
 export type MarcaMaxOrderByAggregateInput = {
   cod_marca?: Prisma.SortOrder
   nom_marca?: Prisma.SortOrder
+  imagen?: Prisma.SortOrder
 }
 
 export type MarcaMinOrderByAggregateInput = {
   cod_marca?: Prisma.SortOrder
   nom_marca?: Prisma.SortOrder
+  imagen?: Prisma.SortOrder
 }
 
 export type MarcaSumOrderByAggregateInput = {
@@ -301,6 +323,10 @@ export type MarcaScalarRelationFilter = {
 
 export type StringFieldUpdateOperationsInput = {
   set?: string
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type IntFieldUpdateOperationsInput = {
@@ -327,11 +353,13 @@ export type MarcaUpdateOneRequiredWithoutProductosNestedInput = {
 
 export type MarcaCreateWithoutProductosInput = {
   nom_marca: string
+  imagen?: string | null
 }
 
 export type MarcaUncheckedCreateWithoutProductosInput = {
   cod_marca?: number
   nom_marca: string
+  imagen?: string | null
 }
 
 export type MarcaCreateOrConnectWithoutProductosInput = {
@@ -352,11 +380,13 @@ export type MarcaUpdateToOneWithWhereWithoutProductosInput = {
 
 export type MarcaUpdateWithoutProductosInput = {
   nom_marca?: Prisma.StringFieldUpdateOperationsInput | string
+  imagen?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type MarcaUncheckedUpdateWithoutProductosInput = {
   cod_marca?: Prisma.IntFieldUpdateOperationsInput | number
   nom_marca?: Prisma.StringFieldUpdateOperationsInput | string
+  imagen?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -393,6 +423,7 @@ export type MarcaCountOutputTypeCountProductosArgs<ExtArgs extends runtime.Types
 export type MarcaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   cod_marca?: boolean
   nom_marca?: boolean
+  imagen?: boolean
   productos?: boolean | Prisma.Marca$productosArgs<ExtArgs>
   _count?: boolean | Prisma.MarcaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["marca"]>
@@ -402,9 +433,10 @@ export type MarcaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type MarcaSelectScalar = {
   cod_marca?: boolean
   nom_marca?: boolean
+  imagen?: boolean
 }
 
-export type MarcaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"cod_marca" | "nom_marca", ExtArgs["result"]["marca"]>
+export type MarcaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"cod_marca" | "nom_marca" | "imagen", ExtArgs["result"]["marca"]>
 export type MarcaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   productos?: boolean | Prisma.Marca$productosArgs<ExtArgs>
   _count?: boolean | Prisma.MarcaCountOutputTypeDefaultArgs<ExtArgs>
@@ -418,6 +450,7 @@ export type $MarcaPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     cod_marca: number
     nom_marca: string
+    imagen: string | null
   }, ExtArgs["result"]["marca"]>
   composites: {}
 }
@@ -790,6 +823,7 @@ export interface Prisma__MarcaClient<T, Null = never, ExtArgs extends runtime.Ty
 export interface MarcaFieldRefs {
   readonly cod_marca: Prisma.FieldRef<"Marca", 'Int'>
   readonly nom_marca: Prisma.FieldRef<"Marca", 'String'>
+  readonly imagen: Prisma.FieldRef<"Marca", 'String'>
 }
     
 

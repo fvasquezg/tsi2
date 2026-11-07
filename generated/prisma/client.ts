@@ -47,15 +47,15 @@ export { Prisma }
  */
 export type Marca = Prisma.MarcaModel
 /**
- * Model Producto
- * 
- */
-export type Producto = Prisma.ProductoModel
-/**
  * Model Categoria
  * 
  */
 export type Categoria = Prisma.CategoriaModel
+/**
+ * Model Producto
+ * 
+ */
+export type Producto = Prisma.ProductoModel
 /**
  * Model CategoriaProducto
  * 
@@ -66,3 +66,38 @@ export type CategoriaProducto = Prisma.CategoriaProductoModel
  * 
  */
 export type Empleado = Prisma.EmpleadoModel
+/**
+ * Model ComunasHabilitadas
+ * 
+ */
+export type ComunasHabilitadas = Prisma.ComunasHabilitadasModel
+/**
+ * Model Cliente
+ * 
+ */
+export type Cliente = Prisma.ClienteModel
+/**
+ * Model Cupon
+ * 
+ */
+export type Cupon = Prisma.CuponModel
+/**
+ * Model Venta
+ * 
+ */
+export type Venta = Prisma.VentaModel
+/**
+ * Model Envio
+ * 
+ */
+export type Envio = Prisma.EnvioModel
+/**
+ * Model DetalleVenta
+ * 
+ */
+export type DetalleVenta = Prisma.DetalleVentaModel
+/**
+ * Model AjusteStock
+ * 
+ */
+export type AjusteStock = Prisma.AjusteStockModel

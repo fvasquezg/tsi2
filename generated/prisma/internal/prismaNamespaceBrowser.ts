@@ -52,10 +52,17 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Marca: 'Marca',
-  Producto: 'Producto',
   Categoria: 'Categoria',
+  Producto: 'Producto',
   CategoriaProducto: 'CategoriaProducto',
-  Empleado: 'Empleado'
+  Empleado: 'Empleado',
+  ComunasHabilitadas: 'ComunasHabilitadas',
+  Cliente: 'Cliente',
+  Cupon: 'Cupon',
+  Venta: 'Venta',
+  Envio: 'Envio',
+  DetalleVenta: 'DetalleVenta',
+  AjusteStock: 'AjusteStock'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -76,10 +83,19 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 export const MarcaScalarFieldEnum = {
   cod_marca: 'cod_marca',
-  nom_marca: 'nom_marca'
+  nom_marca: 'nom_marca',
+  imagen: 'imagen'
 } as const
 
 export type MarcaScalarFieldEnum = (typeof MarcaScalarFieldEnum)[keyof typeof MarcaScalarFieldEnum]
+
+
+export const CategoriaScalarFieldEnum = {
+  cod_categoria: 'cod_categoria',
+  nom_categoria: 'nom_categoria'
+} as const
+
+export type CategoriaScalarFieldEnum = (typeof CategoriaScalarFieldEnum)[keyof typeof CategoriaScalarFieldEnum]
 
 
 export const ProductoScalarFieldEnum = {
@@ -95,14 +111,6 @@ export const ProductoScalarFieldEnum = {
 } as const
 
 export type ProductoScalarFieldEnum = (typeof ProductoScalarFieldEnum)[keyof typeof ProductoScalarFieldEnum]
-
-
-export const CategoriaScalarFieldEnum = {
-  cod_categoria: 'cod_categoria',
-  nom_categoria: 'nom_categoria'
-} as const
-
-export type CategoriaScalarFieldEnum = (typeof CategoriaScalarFieldEnum)[keyof typeof CategoriaScalarFieldEnum]
 
 
 export const CategoriaProductoScalarFieldEnum = {
@@ -127,6 +135,93 @@ export const EmpleadoScalarFieldEnum = {
 export type EmpleadoScalarFieldEnum = (typeof EmpleadoScalarFieldEnum)[keyof typeof EmpleadoScalarFieldEnum]
 
 
+export const ComunasHabilitadasScalarFieldEnum = {
+  cod_comuna: 'cod_comuna',
+  nom_comuna: 'nom_comuna',
+  costo_envio: 'costo_envio',
+  dia_desde: 'dia_desde',
+  dia_hasta: 'dia_hasta',
+  activa: 'activa'
+} as const
+
+export type ComunasHabilitadasScalarFieldEnum = (typeof ComunasHabilitadasScalarFieldEnum)[keyof typeof ComunasHabilitadasScalarFieldEnum]
+
+
+export const ClienteScalarFieldEnum = {
+  id_cliente: 'id_cliente',
+  correo: 'correo',
+  nombres: 'nombres',
+  ap_paterno: 'ap_paterno',
+  ap_materno: 'ap_materno',
+  direccion: 'direccion',
+  cod_comuna: 'cod_comuna',
+  fono: 'fono',
+  contrasena: 'contrasena',
+  activa: 'activa'
+} as const
+
+export type ClienteScalarFieldEnum = (typeof ClienteScalarFieldEnum)[keyof typeof ClienteScalarFieldEnum]
+
+
+export const CuponScalarFieldEnum = {
+  cod_cupon: 'cod_cupon',
+  codigo: 'codigo',
+  porcentaje_descuento: 'porcentaje_descuento',
+  activo: 'activo'
+} as const
+
+export type CuponScalarFieldEnum = (typeof CuponScalarFieldEnum)[keyof typeof CuponScalarFieldEnum]
+
+
+export const VentaScalarFieldEnum = {
+  cod_venta: 'cod_venta',
+  fecha: 'fecha',
+  id_cliente: 'id_cliente',
+  total_neto: 'total_neto',
+  iva: 'iva',
+  total: 'total',
+  estado: 'estado',
+  cod_cupon: 'cod_cupon',
+  metodo_pago: 'metodo_pago',
+  tipo_entrega: 'tipo_entrega'
+} as const
+
+export type VentaScalarFieldEnum = (typeof VentaScalarFieldEnum)[keyof typeof VentaScalarFieldEnum]
+
+
+export const EnvioScalarFieldEnum = {
+  cod_venta: 'cod_venta',
+  direccion_venta: 'direccion_venta',
+  cod_comuna: 'cod_comuna',
+  costo_envio: 'costo_envio'
+} as const
+
+export type EnvioScalarFieldEnum = (typeof EnvioScalarFieldEnum)[keyof typeof EnvioScalarFieldEnum]
+
+
+export const DetalleVentaScalarFieldEnum = {
+  cod_venta: 'cod_venta',
+  cod_producto: 'cod_producto',
+  cantidad: 'cantidad',
+  precio_unitario: 'precio_unitario',
+  subtotal: 'subtotal'
+} as const
+
+export type DetalleVentaScalarFieldEnum = (typeof DetalleVentaScalarFieldEnum)[keyof typeof DetalleVentaScalarFieldEnum]
+
+
+export const AjusteStockScalarFieldEnum = {
+  cod_ajuste: 'cod_ajuste',
+  cod_producto: 'cod_producto',
+  id_empleado: 'id_empleado',
+  fecha: 'fecha',
+  cantidad: 'cantidad',
+  motivo: 'motivo'
+} as const
+
+export type AjusteStockScalarFieldEnum = (typeof AjusteStockScalarFieldEnum)[keyof typeof AjusteStockScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -135,19 +230,27 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-export const MarcaOrderByRelevanceFieldEnum = {
-  nom_marca: 'nom_marca'
-} as const
-
-export type MarcaOrderByRelevanceFieldEnum = (typeof MarcaOrderByRelevanceFieldEnum)[keyof typeof MarcaOrderByRelevanceFieldEnum]
-
-
 export const NullsOrder = {
   first: 'first',
   last: 'last'
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const MarcaOrderByRelevanceFieldEnum = {
+  nom_marca: 'nom_marca',
+  imagen: 'imagen'
+} as const
+
+export type MarcaOrderByRelevanceFieldEnum = (typeof MarcaOrderByRelevanceFieldEnum)[keyof typeof MarcaOrderByRelevanceFieldEnum]
+
+
+export const CategoriaOrderByRelevanceFieldEnum = {
+  nom_categoria: 'nom_categoria'
+} as const
+
+export type CategoriaOrderByRelevanceFieldEnum = (typeof CategoriaOrderByRelevanceFieldEnum)[keyof typeof CategoriaOrderByRelevanceFieldEnum]
 
 
 export const ProductoOrderByRelevanceFieldEnum = {
@@ -159,13 +262,6 @@ export const ProductoOrderByRelevanceFieldEnum = {
 export type ProductoOrderByRelevanceFieldEnum = (typeof ProductoOrderByRelevanceFieldEnum)[keyof typeof ProductoOrderByRelevanceFieldEnum]
 
 
-export const CategoriaOrderByRelevanceFieldEnum = {
-  nom_categoria: 'nom_categoria'
-} as const
-
-export type CategoriaOrderByRelevanceFieldEnum = (typeof CategoriaOrderByRelevanceFieldEnum)[keyof typeof CategoriaOrderByRelevanceFieldEnum]
-
-
 export const EmpleadoOrderByRelevanceFieldEnum = {
   correo: 'correo',
   nombres: 'nombres',
@@ -175,4 +271,45 @@ export const EmpleadoOrderByRelevanceFieldEnum = {
 } as const
 
 export type EmpleadoOrderByRelevanceFieldEnum = (typeof EmpleadoOrderByRelevanceFieldEnum)[keyof typeof EmpleadoOrderByRelevanceFieldEnum]
+
+
+export const ComunasHabilitadasOrderByRelevanceFieldEnum = {
+  nom_comuna: 'nom_comuna'
+} as const
+
+export type ComunasHabilitadasOrderByRelevanceFieldEnum = (typeof ComunasHabilitadasOrderByRelevanceFieldEnum)[keyof typeof ComunasHabilitadasOrderByRelevanceFieldEnum]
+
+
+export const ClienteOrderByRelevanceFieldEnum = {
+  correo: 'correo',
+  nombres: 'nombres',
+  ap_paterno: 'ap_paterno',
+  ap_materno: 'ap_materno',
+  direccion: 'direccion',
+  fono: 'fono',
+  contrasena: 'contrasena'
+} as const
+
+export type ClienteOrderByRelevanceFieldEnum = (typeof ClienteOrderByRelevanceFieldEnum)[keyof typeof ClienteOrderByRelevanceFieldEnum]
+
+
+export const CuponOrderByRelevanceFieldEnum = {
+  codigo: 'codigo'
+} as const
+
+export type CuponOrderByRelevanceFieldEnum = (typeof CuponOrderByRelevanceFieldEnum)[keyof typeof CuponOrderByRelevanceFieldEnum]
+
+
+export const EnvioOrderByRelevanceFieldEnum = {
+  direccion_venta: 'direccion_venta'
+} as const
+
+export type EnvioOrderByRelevanceFieldEnum = (typeof EnvioOrderByRelevanceFieldEnum)[keyof typeof EnvioOrderByRelevanceFieldEnum]
+
+
+export const AjusteStockOrderByRelevanceFieldEnum = {
+  motivo: 'motivo'
+} as const
+
+export type AjusteStockOrderByRelevanceFieldEnum = (typeof AjusteStockOrderByRelevanceFieldEnum)[keyof typeof AjusteStockOrderByRelevanceFieldEnum]
 
