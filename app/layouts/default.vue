@@ -17,8 +17,16 @@ const navegacion = [
     { label: 'Perros', to: '/perros' },
     { label: 'Gatos', to: '/gatos' },
     { label: 'FAQ', to: '/faq' },
-    { label: 'Gestor productos', to: '/addProductos' },
-    { label: 'Login', to: '/login' },
+
+    ...(user.value?.tipo_cuenta === 0 || user.value?.tipo_cuenta === 1 ? [
+        { label: 'Gestor categorias', to: '/gestorCategorias' },
+        { label: 'Gestor marcas', to: '/gestorMarcas' },
+        { label: 'Gestor productos', to: '/addProductos' },
+    ] : [{ label: 'Login', to: '/login' }]),
+
+    ...(user.value?.tipo_cuenta === 1 ? [
+        { label: 'Gestor empleados', to: '/gestorEmpleados' },
+    ] : []),
 ]
 
 // Para logout

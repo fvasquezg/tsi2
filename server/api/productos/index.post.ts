@@ -1,8 +1,9 @@
+// server/api/productos/index.post.ts
 import fs from 'node:fs'
+
 export default defineEventHandler(async (event) => {
     // extraer los datos del formulario del producto
     const { nom_producto, desc_producto, stock, stock_critico, precio_unitario, cod_marca, nombreArchivo, archivoBase64, categorias } = await readBody(event)
-    
 
     // validar que venga al menos una categoria
     if (!categorias?.length) {
@@ -11,30 +12,33 @@ export default defineEventHandler(async (event) => {
 
     const nom_productoNormalizado = typeof nom_producto === 'string' ? nom_producto.trim() : '';
     const desc_productoNormalizado = typeof desc_producto === 'string' ? desc_producto.trim() : '';
+
     // convertir a número los campos numéricos (llegan como texto desde el formulario)
     const stockNumero = Number(stock)
     const stockCriticoNumero = Number(stock_critico)
     const precioNumero = Number(precio_unitario)
     const codMarcaNumero = Number(cod_marca)
 
-    // validar que realmente sean números válidos
+    // validar que realmente sean números válidos (y que no sean negativos)
     if (
-        !Number.isInteger(stockNumero) ||
-        !Number.isInteger(stockCriticoNumero) ||
-        !Number.isFinite(precioNumero)
+        !Number.isInteger(stockNumero) || stockNumero < 0 ||
+        !Number.isInteger(stockCriticoNumero) || stockCriticoNumero < 0 ||
+        !Number.isFinite(precioNumero) || precioNumero <= 0
     ) {
-        throw createError({ statusCode: 400, message: 'Stock, stock crítico y precio deben ser números válidos' })
+        throw createError({ statusCode: 400, message: 'Stock, stock crítico y precio deben ser números válidos y no negativos' })
     }
 
     //SECCIÓN PARA GUARDAR LA RUTA DE LA IMAGEN
     let ruta = '/img/default.jpg';
     if (archivoBase64) {
         const base64Limpio = archivoBase64.split(';base64,').pop();
-        const nombreUnico = `${Date.now()}-${nombreArchivo}`;
-        const rutaFisica = `./public/img/${nombreUnico}`;
+        const nombreLimpio = String(nombreArchivo).replace(/[^a-zA-Z0-9.\-]/g, '_');
+        const nombreUnico = `${Date.now()}-${nombreLimpio}`;
 
-        fs.writeFileSync(rutaFisica, base64Limpio, { encoding: 'base64' });
-        ruta = `/img/${nombreUnico}`
+        // crea la carpeta si no existe y guarda el archivo
+        fs.mkdirSync('./public/img/productos', { recursive: true });
+        fs.writeFileSync(`./public/img/productos/${nombreUnico}`, base64Limpio, { encoding: 'base64' });
+        ruta = `/img/productos/${nombreUnico}`
     }
 
     try {
@@ -63,6 +67,10 @@ export default defineEventHandler(async (event) => {
             producto
         }
     } catch (err: any) {
+        // el nombre ya lo tiene otro producto (nom_producto es @unique)
+        if (err.code === 'P2002') {
+            throw createError({ statusCode: 409, message: 'Ya existe un producto con ese nombre' })
+        }
         if (err.code === 'P2003') {
             throw createError({ statusCode: 400, message: 'La marca o alguna categoría indicada no existe' })
         }

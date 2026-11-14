@@ -1,3 +1,4 @@
+// server/api/productos/[cod_producto]/index.put.ts
 import fs from 'node:fs'
 
 export default defineEventHandler(async (event) => {
@@ -39,11 +40,13 @@ export default defineEventHandler(async (event) => {
 
     if (archivoBase64) {
         const base64Limpio = archivoBase64.split(';base64,').pop();
-        const nombreUnico = `${Date.now()}-${nombreArchivo}`;
-        const rutaFisica = `./public/img/${nombreUnico}`;
+        const nombreLimpio = String(nombreArchivo).replace(/[^a-zA-Z0-9.\-]/g, '_');
+        const nombreUnico = `${Date.now()}-${nombreLimpio}`;
 
-        fs.writeFileSync(rutaFisica, base64Limpio, { encoding: 'base64' });
-        datosImagen = { imagen: `/img/${nombreUnico}` }
+        // crea la carpeta si no existe y guarda el archivo
+        fs.mkdirSync('./public/img/productos', { recursive: true });
+        fs.writeFileSync(`./public/img/productos/${nombreUnico}`, base64Limpio, { encoding: 'base64' });
+        datosImagen = { imagen: `/img/productos/${nombreUnico}` }
     }
 
     try {
@@ -76,6 +79,10 @@ export default defineEventHandler(async (event) => {
     } catch (err: any) {
         if (err.code === 'P2025') {
             throw createError({ statusCode: 404, message: 'El producto no existe' })
+        }
+        // el nombre ya lo tiene otro producto (nom_producto es @unique)
+        if (err.code === 'P2002') {
+            throw createError({ statusCode: 409, message: 'Ya existe un producto con ese nombre' })
         }
         if (err.code === 'P2003') {
             throw createError({ statusCode: 400, message: 'La marca o alguna categoría indicada no existe' })

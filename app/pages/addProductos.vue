@@ -79,12 +79,7 @@ async function guardarProducto() {
         let archivoBase64 = '';
         if (archivoImagen.value) {
             nombreArchivo = archivoImagen.value.name
-            archivoBase64 = await new Promise<string>((resolve, reject) => {
-                const reader = new FileReader()
-                reader.onload = () => resolve(reader.result as string)
-                reader.onerror = () => reject(new Error('No se pudo leer la imagen'))
-                reader.readAsDataURL(archivoImagen.value!)
-            })
+            archivoBase64 = await leerImagenBase64(archivoImagen.value)
         }
 
         await $fetch('/api/productos', {
@@ -287,12 +282,7 @@ async function guardarEdicionProducto() {
         let archivoBase64 = '';
         if (archivoImagenEditar.value) {
             nombreArchivo = archivoImagenEditar.value.name
-            archivoBase64 = await new Promise<string>((resolve, reject) => {
-                const reader = new FileReader()
-                reader.onload = () => resolve(reader.result as string)
-                reader.onerror = () => reject(new Error('No se pudo leer la imagen'))
-                reader.readAsDataURL(archivoImagenEditar.value!)
-            })
+            archivoBase64 = await leerImagenBase64(archivoImagenEditar.value)
         }
 
         await $fetch(`/api/productos/${productoEditando.value.cod_producto}`, {
@@ -371,26 +361,40 @@ async function cambiarEstadoProducto(producto: Producto, nuevoEstado: boolean) {
 
 //FILTRO PARA CONSULTAS
 // Filtros
+const marcaSeleccionada = ref(0) // 0 = todas las marcas
+
+// opciones del selector: "Todas las marcas" + las marcas de la base de datos
+const opcionesMarca = computed(() => [
+    { cod_marca: 0, nom_marca: 'Todas las marcas' },
+    ...(marcas.value ?? [])
+])
+
 const busqueda = ref('')
 const categoriaSeleccionada = ref<number | null>(null)
 
-// Productos que se muestran: filtrados por texto y por categoría (incluye inactivos)
+// Productos que se muestran: filtrados por texto, categoría y marca (incluye inactivos)
 const productosFiltrados = computed(() => {
     const texto = busqueda.value.trim().toLowerCase()
     return (productos.value ?? []).filter((p) => {
         const coincideTexto = !texto
             || p.nom_producto.toLowerCase().includes(texto)
-            || p.desc_producto.toLowerCase().includes(texto)
+            || (p.desc_producto ?? '').toLowerCase().includes(texto)
         const coincideCategoria = categoriaSeleccionada.value === null
             || p.categorias?.some(c => c.cod_categoria === categoriaSeleccionada.value)
-        return coincideTexto && coincideCategoria
+        const coincideMarca = marcaSeleccionada.value === 0
+            || p.cod_marca === marcaSeleccionada.value
+        return coincideTexto && coincideCategoria && coincideMarca
     })
 })
 
 function limpiarFiltros() {
     busqueda.value = ''
     categoriaSeleccionada.value = null
+    marcaSeleccionada.value = 0
 }
+
+// FILTRO MARCAS
+
 
 </script>
 <template>
@@ -414,10 +418,19 @@ function limpiarFiltros() {
                 producto</UButton>
         </section>
 
-        <!-- Buscador -->
-        <UInput v-model="busqueda" icon="i-lucide-search" class="w-full"
-            placeholder="Buscar por nombre o descripción..."
-            :ui="{ base: 'bg-fondo-general/90 text-texto-formulario focus-visible:ring-boton' }" />
+        <!-- Buscador y filtro por marca -->
+        <div class="flex flex-col gap-4 sm:flex-row">
+            <UInput v-model="busqueda" icon="i-lucide-search" class="w-full"
+                placeholder="Buscar por nombre o descripción..."
+                :ui="{ base: 'bg-fondo-general/90 text-texto-formulario focus-visible:ring-boton' }" />
+
+            <USelectMenu v-model="marcaSeleccionada" :items="opcionesMarca" value-key="cod_marca" label-key="nom_marca"
+                class="w-full sm:w-64" :ui="{
+                    base: colorFondoCamposFormulario + ' hover:bg-fondo-general hover:ring-boton transition-colors',
+                    content: 'bg-fondo-card border border-fondo-login',
+                    item: 'text-texto data-highlighted:before:bg-boton/30'
+                }" />
+        </div>
 
         <!-- Botones de categorías -->
         <div class="flex flex-wrap gap-2">

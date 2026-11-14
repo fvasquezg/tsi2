@@ -26,6 +26,11 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 401, message: 'Credenciales no validas' })  
     }
 
+    // revisar que este activa la cuenta
+    if (!empleado.activa) {
+        throw createError({ statusCode: 403, message: 'Tu cuenta ha sido desactivada.' });
+    }
+
     //guardar sesion con nuxt auth utils
     await setUserSession(event, {
         user: { 
