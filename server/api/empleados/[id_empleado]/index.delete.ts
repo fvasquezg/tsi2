@@ -1,9 +1,15 @@
 // server/api/empleados/[id_empleado]/index.delete.ts
 export default defineEventHandler(async (event) => {
+    const { user } = await requireUserSession(event)        
     const id_empleado = Number(getRouterParam(event, 'id_empleado'))
 
     if (!id_empleado) {
         throw createError({ statusCode: 400, message: 'Código de empleado inválido' })
+    }
+
+    // Esto es para que no deje a el admin desactivarse a si mismo        
+    if (id_empleado === user.id_empleado) {
+        throw createError({ statusCode: 400, message: 'No puede borrar su propia cuenta' })
     }
 
     // revisar si el empleado tiene ajustes de stock registrados antes de borrarlo

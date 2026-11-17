@@ -34,6 +34,7 @@ export default defineEventHandler(async (event) => {
     //guardar sesion con nuxt auth utils
     await setUserSession(event, {
         user: { 
+            id_empleado: empleado.id_empleado,
             correo: empleado.correo,
             nombres: empleado.nombres,
             ap_paterno: empleado.ap_paterno,

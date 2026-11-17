@@ -1,4 +1,5 @@
 export default defineEventHandler(async (event) => {
+    const { user } = await requireUserSession(event)        
     const id_empleado = Number(getRouterParam(event, 'id_empleado'))
 
     if (!id_empleado) {
@@ -7,10 +8,16 @@ export default defineEventHandler(async (event) => {
 
     const { activa } = await readBody(event)
 
+    // Para validar que llegue algo de tipo boolean
     if (typeof activa !== 'boolean') {
         throw createError({ statusCode: 400, message: 'El estado debe ser verdadero o falso' })
     }
 
+    // Esto es para que no deje a el admin desactivarse a si mismo        
+    if (id_empleado === user.id_empleado && !activa) {
+        throw createError({ statusCode: 400, message: 'No puede desactivar su propia cuenta' })
+    }
+    
     try {
         const empleado = await prisma.empleado.update({
             where: { id_empleado },

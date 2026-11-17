@@ -1,7 +1,7 @@
 <!-- pages/addEmpleados.vue -->
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui';
-import type { Empleado } from '~/types/empleado';
+import type { Empleado } from '#shared/types/empleado'
 import { z } from 'zod';
 
 // Para solo darle acceso al administrador a esta pagina
@@ -441,7 +441,7 @@ const tableMeta = createTableMeta<Empleado>()
                 <template #eliminar-cell="{ row }">
                     <UButton icon="i-lucide-trash-2" size="md" color="neutral" variant="solid"
                         :disabled="esCuentaPropia(row.original)"
-                        class="bg-boton-eliminar hover:bg-boton-eliminar-hover focus:outline-none focus:ring-0 text-white"
+                        class="bg-boton-eliminar hover:bg-boton-eliminar-hover focus:outline-none focus:ring-0 text-white disabled:text-black"
                         @click="confirmarBorrarEmpleado(row.original)" />
                 </template>
             </UTable>
