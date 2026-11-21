@@ -16,3 +16,11 @@ export interface Producto{
      marca?: Marca
     categorias?: CategoriaProducto[]
 }
+
+export interface ProductosPaginados {
+    productos: Producto[]
+    total: number
+    pagina: number
+    porPagina: number
+    totalPaginas: number
+}

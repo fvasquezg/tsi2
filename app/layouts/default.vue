@@ -22,6 +22,7 @@ const navegacion = [
         { label: 'Gestor categorias', to: '/gestorCategorias' },
         { label: 'Gestor marcas', to: '/gestorMarcas' },
         { label: 'Gestor productos', to: '/addProductos' },
+        { label: 'Gestor stock', to: '/gestorStock' },
     ] : [{ label: 'Login', to: '/login' }]),
 
     ...(user.value?.tipo_cuenta === 1 ? [
