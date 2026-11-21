@@ -21,7 +21,7 @@ const navegacion = [
     ...(user.value?.tipo_cuenta === 0 || user.value?.tipo_cuenta === 1 ? [
         { label: 'Gestor categorias', to: '/gestorCategorias' },
         { label: 'Gestor marcas', to: '/gestorMarcas' },
-        { label: 'Gestor productos', to: '/addProductos' },
+        { label: 'Gestor productos', to: '/gestorProductos' },
         { label: 'Gestor stock', to: '/gestorStock' },
         { label: 'Gestor comunas', to: '/gestorComunas' },
     ] : [{ label: 'Login', to: '/login' }]),
@@ -66,9 +66,9 @@ async function logout() {
                     <!-- Nombre y rol: se muestra para cualquiera con sesión iniciada -->
                     <div v-if="user" class="flex flex-col rounded-md border-2 border-boton px-4 py-2">
                         <span class="text-texto text-md">{{ user.nombres }} {{ user.ap_paterno }} {{ user.ap_materno
-                            }}</span>
-                        <span class="text-texto/70 text-sm">{{ user.tipo_cuenta === 1 ? 'Administrador' : 'Empleado'
                         }}</span>
+                        <span class="text-texto/70 text-sm">{{ user.tipo_cuenta === 1 ? 'Administrador' : 'Empleado'
+                            }}</span>
                     </div>
 
                     <UButton v-if="user" @click="logout"

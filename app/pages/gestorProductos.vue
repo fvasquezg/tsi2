@@ -228,7 +228,7 @@ const columns: TableColumn<Producto>[] = [
     // columnas extras
     { id: 'editar', header: 'Editar', meta: { class: { th: 'text-center', td: 'text-center' } } },
     { id: 'eliminar', header: 'Eliminar', meta: { class: { th: 'text-center', td: 'text-center' } } },
-    { id: 'activo', header: 'Estado', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { id: 'activo', header: 'Estado', meta: { class: { th: '', td: 'text-center' } } },
 ]
 
 const tableMeta = createTableMeta<Producto>()

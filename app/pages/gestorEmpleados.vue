@@ -364,7 +364,7 @@ const columns: TableColumn<Empleado>[] = [
         cell: ({ row }) => row.original.tipo_cuenta === 1 ? 'Administrador' : 'Empleado'
     },
     // columnas extras
-    { id: 'activa', header: 'Estado', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { id: 'activa', header: 'Estado', meta: { class: { th: '', td: 'text-center' } } },
     { id: 'editar', header: 'Editar', meta: { class: { th: 'text-center', td: 'text-center' } } },
     { id: 'eliminar', header: 'Eliminar', meta: { class: { th: 'text-center', td: 'text-center' } } },
 ]
@@ -408,7 +408,7 @@ const tableMeta = createTableMeta<Empleado>()
                 :class="tipoSeleccionado === opcion.value
                     ? 'bg-boton text-texto-login-admin font-bold'
                     : 'bg-fondo-card border border-fondo-login text-texto font-semibold hover:bg-boton-hover'">
-                {{ opcion.label }}s
+                {{ opcion.label }}{{ opcion.value === 1 ? 'es' : 's' }}
             </button>
         </div>
 
@@ -464,7 +464,8 @@ const tableMeta = createTableMeta<Empleado>()
         <div v-if="empleadosFiltrados.length > 0 && !cargandoEmpleados"
             class="flex flex-col items-center justify-between gap-3 sm:flex-row">
             <p class="text-sm text-texto/70">
-                Mostrando {{ (paginaActual - 1) * empleadosPorPagina + 1 }}–{{ (paginaActual - 1) * empleadosPorPagina + empleadosFiltrados.length }}
+                Mostrando {{ (paginaActual - 1) * empleadosPorPagina + 1 }}–{{ (paginaActual - 1) * empleadosPorPagina +
+                    empleadosFiltrados.length }}
                 de {{ totalEmpleados }} cuentas
             </p>
             <div class="flex items-center gap-3">

@@ -239,7 +239,7 @@ const columns: TableColumn<Comuna>[] = [
         meta: { class: { th: 'text-center', td: 'text-center' } },
         cell: ({ row }) => mostrarDias(row.original)
     },
-    { id: 'activa', header: 'Activa', meta: { class: { th: 'text-center', td: 'text-center' } } },
+    { id: 'activa', header: 'Activa', meta: { class: { th: '', td: 'text-center' } } },
     { id: 'editar', header: 'Editar', meta: { class: { th: 'text-center', td: 'text-center' } } },
     { id: 'eliminar', header: 'Eliminar', meta: { class: { th: 'text-center', td: 'text-center' } } }
 ]
