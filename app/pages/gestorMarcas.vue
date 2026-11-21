@@ -1,6 +1,6 @@
 <!-- pages/addMarcas.vue -->
 <script setup lang="ts">
-import type { Marca } from '~/types/marca';
+import type { Marca, MarcasPaginadas } from '~/types/marca';
 import { z } from 'zod';
 
 definePageMeta({
@@ -12,8 +12,36 @@ const validarMarca = z.object({
     nom_marca: z.string().trim().min(1, 'Debe ingresar el nombre de la marca').max(30, 'Máximo 30 caracteres'),
 })
 
-// para tomar la informacion de las marcas
-const { data: marcas, pending: cargandoMarcas, error: errorMarcas, refresh } = await useFetch<Marca[]>('/api/marcas')
+const paginaActual = ref(1)
+const busqueda = ref('')
+const parametrosMarcas = computed(() => ({
+    pagina: paginaActual.value,
+    busqueda: busqueda.value.trim()
+}))
+
+const {
+    data: resultadoMarcas,
+    pending: cargandoMarcas,
+    error: errorMarcas,
+    refresh
+} = await useFetch<MarcasPaginadas>('/api/marcas/paginado', {
+    query: parametrosMarcas
+})
+
+const marcasFiltradas = computed(() => resultadoMarcas.value?.marcas ?? [])
+const totalMarcas = computed(() => resultadoMarcas.value?.total ?? 0)
+const totalPaginas = computed(() => resultadoMarcas.value?.totalPaginas ?? 0)
+const marcasPorPagina = computed(() => resultadoMarcas.value?.porPagina ?? 20)
+
+watch(busqueda, () => {
+    paginaActual.value = 1
+})
+
+watch(() => resultadoMarcas.value?.pagina, (pagina) => {
+    if (pagina && pagina !== paginaActual.value) {
+        paginaActual.value = pagina
+    }
+})
 
 // colores de los campos del formulario
 const colorTextoFormulario = 'text-texto-formulario';
@@ -224,16 +252,6 @@ async function borrarMarca() {
 // ------------------------------------------------------------
 // FILTRO PARA CONSULTAS
 // ------------------------------------------------------------
-const busqueda = ref('')
-
-// marcas que se muestran, filtradas por el texto del buscador
-const marcasFiltradas = computed(() => {
-    const texto = busqueda.value.trim().toLowerCase()
-    return (marcas.value ?? []).filter(m =>
-        !texto || m.nom_marca.toLowerCase().includes(texto)
-    )
-})
-
 function limpiarFiltros() {
     busqueda.value = ''
 }
@@ -309,6 +327,25 @@ function limpiarFiltros() {
                 </div>
             </div>
         </section>
+
+        <div v-if="marcasFiltradas.length > 0 && !cargandoMarcas"
+            class="flex flex-col items-center justify-between gap-3 sm:flex-row">
+            <p class="text-sm text-texto/70">
+                Mostrando {{ (paginaActual - 1) * marcasPorPagina + 1 }}–{{ (paginaActual - 1) * marcasPorPagina + marcasFiltradas.length }}
+                de {{ totalMarcas }} marcas
+            </p>
+            <div class="flex items-center gap-3">
+                <UButton :disabled="paginaActual <= 1 || cargandoMarcas" @click="paginaActual--"
+                    class="bg-boton hover:bg-boton-hover text-texto py-2 px-4 rounded-md font-bold transition-colors disabled:opacity-50">
+                    Anterior
+                </UButton>
+                <span class="text-sm text-texto">Página {{ paginaActual }} de {{ totalPaginas }}</span>
+                <UButton :disabled="paginaActual >= totalPaginas || cargandoMarcas" @click="paginaActual++"
+                    class="bg-boton hover:bg-boton-hover text-texto py-2 px-4 rounded-md font-bold transition-colors disabled:opacity-50">
+                    Siguiente
+                </UButton>
+            </div>
+        </div>
 
         <!-- FORMULARIO PARA AGREGAR MARCAS -->
         <Popups v-model:open="mostrarFormularioAgregar" title="Agregar marca">

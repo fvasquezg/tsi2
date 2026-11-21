@@ -7,3 +7,11 @@ export interface Empleado {
     tipo_cuenta: number // 0 = Empleado, 1 = Administrador
     activa: boolean
 }
+
+export interface EmpleadosPaginados {
+    empleados: Empleado[]
+    total: number
+    pagina: number
+    porPagina: number
+    totalPaginas: number
+}

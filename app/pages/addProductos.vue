@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui';
-import type { Producto } from '~/types/producto';
+import type { Producto, ProductosPaginados } from '~/types/producto';
 import type { Marca } from '~/types/marca';
 import type { Categoria } from '~/types/categoria';
 import { z } from 'zod';
@@ -22,14 +22,46 @@ const validarCrearProducto = z.object({
     categorias: z.array(z.number()).min(1, 'Debe seleccionar al menos una categoría'),
 })
 
-// para tomar la informacion de los productos en la tabla producto
-const { data: productos, pending: cargandoProductos, error: errorProductos, refresh } = await useFetch<Producto[]>('/api/productos')
+const paginaActual = ref(1)
+const marcaSeleccionada = ref(0) // 0 = todas las marcas
+const busqueda = ref('')
+const categoriaSeleccionada = ref<number | null>(null)
 
-//const { data: productos, pending, error, refresh } = await useFetch<Producto[]>('/api/productos')
+const parametrosProductos = computed(() => ({
+    pagina: paginaActual.value,
+    busqueda: busqueda.value.trim(),
+    cod_marca: marcaSeleccionada.value || undefined,
+    cod_categoria: categoriaSeleccionada.value ?? undefined
+}))
+
+const {
+    data: resultadoProductos,
+    pending: cargandoProductos,
+    error: errorProductos,
+    refresh
+} = await useFetch<ProductosPaginados>('/api/productos/paginado', {
+    query: parametrosProductos
+})
+
 const { data: marcas } = await useFetch<Marca[]>('/api/marcas')
 const { data: categorias } = await useFetch<Categoria[]>('/api/categorias')
 
-// Agregar usuario
+const productosFiltrados = computed(() => resultadoProductos.value?.productos ?? [])
+const totalProductos = computed(() => resultadoProductos.value?.total ?? 0)
+const totalPaginas = computed(() => resultadoProductos.value?.totalPaginas ?? 0)
+const productosPorPagina = computed(() => resultadoProductos.value?.porPagina ?? 20)
+
+watch([busqueda, marcaSeleccionada, categoriaSeleccionada], () => {
+    paginaActual.value = 1
+})
+
+watch(() => resultadoProductos.value?.pagina, (pagina) => {
+    if (pagina && pagina !== paginaActual.value) {
+        paginaActual.value = pagina
+    }
+})
+
+// Agregar producto
 const mostrarFormularioAgregar = ref(false);
 const errorFormularioAgregar = ref('');
 const guardandoNuevoProducto = ref(false);
@@ -98,6 +130,7 @@ async function guardarProducto() {
             }
         });
         cerrarFormularioAgregar();
+        paginaActual.value = 1;
         await refresh();
 
         useToast().add({
@@ -359,33 +392,11 @@ async function cambiarEstadoProducto(producto: Producto, nuevoEstado: boolean) {
     }
 }
 
-//FILTRO PARA CONSULTAS
-// Filtros
-const marcaSeleccionada = ref(0) // 0 = todas las marcas
-
 // opciones del selector: "Todas las marcas" + las marcas de la base de datos
 const opcionesMarca = computed(() => [
     { cod_marca: 0, nom_marca: 'Todas las marcas' },
     ...(marcas.value ?? [])
 ])
-
-const busqueda = ref('')
-const categoriaSeleccionada = ref<number | null>(null)
-
-// Productos que se muestran: filtrados por texto, categoría y marca (incluye inactivos)
-const productosFiltrados = computed(() => {
-    const texto = busqueda.value.trim().toLowerCase()
-    return (productos.value ?? []).filter((p) => {
-        const coincideTexto = !texto
-            || p.nom_producto.toLowerCase().includes(texto)
-            || (p.desc_producto ?? '').toLowerCase().includes(texto)
-        const coincideCategoria = categoriaSeleccionada.value === null
-            || p.categorias?.some(c => c.cod_categoria === categoriaSeleccionada.value)
-        const coincideMarca = marcaSeleccionada.value === 0
-            || p.cod_marca === marcaSeleccionada.value
-        return coincideTexto && coincideCategoria && coincideMarca
-    })
-})
 
 function limpiarFiltros() {
     busqueda.value = ''
@@ -497,6 +508,26 @@ function limpiarFiltros() {
 
             </UTable>
         </section>
+
+        <div v-if="productosFiltrados.length > 0" class="flex flex-col items-center justify-between gap-3 sm:flex-row">
+            <p class="text-sm text-texto/70">
+                Mostrando {{ (paginaActual - 1) * productosPorPagina + 1 }}–{{ (paginaActual - 1) * productosPorPagina +
+                    productosFiltrados.length }}
+                de {{ totalProductos }} productos
+            </p>
+            <div class="flex items-center gap-3">
+                <UButton :disabled="paginaActual <= 1 || cargandoProductos" @click="paginaActual--"
+                    class="bg-boton hover:bg-boton-hover text-texto py-2 px-4 rounded-md font-bold transition-colors disabled:opacity-50">
+                    Anterior
+                </UButton>
+                <span class="text-sm text-texto">Página {{ paginaActual }} de {{ totalPaginas }}</span>
+                <UButton :disabled="paginaActual >= totalPaginas || cargandoProductos" @click="paginaActual++"
+                    class="bg-boton hover:bg-boton-hover text-texto py-2 px-4 rounded-md font-bold transition-colors disabled:opacity-50">
+                    Siguiente
+                </UButton>
+            </div>
+        </div>
+
         <!-- FORMULARIO PARA AGREGAR PRODUCTOS -->
         <Popups v-model:open="mostrarFormularioAgregar" title="Agregar producto">
             <UForm class="space-y-4" :state="formularioNuevoProducto" :schema="validarCrearProducto"

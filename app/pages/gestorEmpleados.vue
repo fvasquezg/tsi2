@@ -1,7 +1,7 @@
 <!-- pages/addEmpleados.vue -->
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui';
-import type { Empleado } from '#shared/types/empleado'
+import type { Empleado, EmpleadosPaginados } from '#shared/types/empleado'
 import { z } from 'zod';
 
 // Para solo darle acceso al administrador a esta pagina
@@ -43,8 +43,38 @@ const validarEditarEmpleado = z.object({
     contrasena: z.string().refine(v => v === '' || v.length >= 8, 'Debe tener al menos 8 caracteres, o dejarse vacía'),
 })
 
-// para tomar la informacion de los empleados
-const { data: empleados, pending: cargandoEmpleados, error: errorEmpleados, refresh } = await useFetch<Empleado[]>('/api/empleados')
+const paginaActual = ref(1)
+const busqueda = ref('')
+const tipoSeleccionado = ref<number | null>(null) // null = todos
+const parametrosEmpleados = computed(() => ({
+    pagina: paginaActual.value,
+    busqueda: busqueda.value.trim(),
+    tipo_cuenta: tipoSeleccionado.value ?? undefined
+}))
+
+const {
+    data: resultadoEmpleados,
+    pending: cargandoEmpleados,
+    error: errorEmpleados,
+    refresh
+} = await useFetch<EmpleadosPaginados>('/api/empleados/paginado', {
+    query: parametrosEmpleados
+})
+
+const empleadosFiltrados = computed(() => resultadoEmpleados.value?.empleados ?? [])
+const totalEmpleados = computed(() => resultadoEmpleados.value?.total ?? 0)
+const totalPaginas = computed(() => resultadoEmpleados.value?.totalPaginas ?? 0)
+const empleadosPorPagina = computed(() => resultadoEmpleados.value?.porPagina ?? 20)
+
+watch([busqueda, tipoSeleccionado], () => {
+    paginaActual.value = 1
+})
+
+watch(() => resultadoEmpleados.value?.pagina, (pagina) => {
+    if (pagina && pagina !== paginaActual.value) {
+        paginaActual.value = pagina
+    }
+})
 
 // colores de los campos del formulario
 const colorTextoFormulario = 'text-texto-formulario';
@@ -310,22 +340,6 @@ async function borrarEmpleado() {
 // ------------------------------------------------------------
 // FILTROS PARA CONSULTAS
 // ------------------------------------------------------------
-const busqueda = ref('')
-const tipoSeleccionado = ref<number | null>(null) // null = todos
-
-// empleados que se muestran: filtrados por texto (nombre o correo) y por tipo de cuenta
-const empleadosFiltrados = computed(() => {
-    const texto = busqueda.value.trim().toLowerCase()
-    return (empleados.value ?? []).filter((e) => {
-        const coincideTexto = !texto
-            || `${e.nombres} ${e.ap_paterno} ${e.ap_materno}`.toLowerCase().includes(texto)
-            || e.correo.toLowerCase().includes(texto)
-        const coincideTipo = tipoSeleccionado.value === null
-            || e.tipo_cuenta === tipoSeleccionado.value
-        return coincideTexto && coincideTipo
-    })
-})
-
 function limpiarFiltros() {
     busqueda.value = ''
     tipoSeleccionado.value = null
@@ -446,6 +460,25 @@ const tableMeta = createTableMeta<Empleado>()
                 </template>
             </UTable>
         </section>
+
+        <div v-if="empleadosFiltrados.length > 0 && !cargandoEmpleados"
+            class="flex flex-col items-center justify-between gap-3 sm:flex-row">
+            <p class="text-sm text-texto/70">
+                Mostrando {{ (paginaActual - 1) * empleadosPorPagina + 1 }}–{{ (paginaActual - 1) * empleadosPorPagina + empleadosFiltrados.length }}
+                de {{ totalEmpleados }} cuentas
+            </p>
+            <div class="flex items-center gap-3">
+                <UButton :disabled="paginaActual <= 1 || cargandoEmpleados" @click="paginaActual--"
+                    class="bg-boton hover:bg-boton-hover text-texto py-2 px-4 rounded-md font-bold transition-colors disabled:opacity-50">
+                    Anterior
+                </UButton>
+                <span class="text-sm text-texto">Página {{ paginaActual }} de {{ totalPaginas }}</span>
+                <UButton :disabled="paginaActual >= totalPaginas || cargandoEmpleados" @click="paginaActual++"
+                    class="bg-boton hover:bg-boton-hover text-texto py-2 px-4 rounded-md font-bold transition-colors disabled:opacity-50">
+                    Siguiente
+                </UButton>
+            </div>
+        </div>
 
         <!-- FORMULARIO PARA AGREGAR CUENTAS -->
         <Popups v-model:open="mostrarFormularioAgregar" title="Agregar cuenta">

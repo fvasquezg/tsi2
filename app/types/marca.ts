@@ -8,3 +8,11 @@ export interface Marca {
   // Relaciones. ? porque puede ser opcinonal. relacion uno es a muchos
   productos?: Producto[]
 }
+
+export interface MarcasPaginadas {
+  marcas: Marca[]
+  total: number
+  pagina: number
+  porPagina: number
+  totalPaginas: number
+}

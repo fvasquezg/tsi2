@@ -1,7 +1,7 @@
 <!-- pages/addCategorias.vue -->
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui';
-import type { Categoria } from '~/types/categoria';
+import type { Categoria, CategoriasPaginadas } from '~/types/categoria';
 import { z } from 'zod';
 
 definePageMeta({
@@ -13,8 +13,36 @@ const validarCategoria = z.object({
     nom_categoria: z.string().trim().min(1, 'Debe ingresar el nombre de la categoría').max(30, 'Máximo 30 caracteres'),
 })
 
-// para tomar la informacion de las categorias
-const { data: categorias, pending: cargandoCategorias, error: errorCategorias, refresh } = await useFetch<Categoria[]>('/api/categorias')
+const paginaActual = ref(1)
+const busqueda = ref('')
+const parametrosCategorias = computed(() => ({
+    pagina: paginaActual.value,
+    busqueda: busqueda.value.trim()
+}))
+
+const {
+    data: resultadoCategorias,
+    pending: cargandoCategorias,
+    error: errorCategorias,
+    refresh
+} = await useFetch<CategoriasPaginadas>('/api/categorias/paginado', {
+    query: parametrosCategorias
+})
+
+const categoriasFiltradas = computed(() => resultadoCategorias.value?.categorias ?? [])
+const totalCategorias = computed(() => resultadoCategorias.value?.total ?? 0)
+const totalPaginas = computed(() => resultadoCategorias.value?.totalPaginas ?? 0)
+const categoriasPorPagina = computed(() => resultadoCategorias.value?.porPagina ?? 20)
+
+watch(busqueda, () => {
+    paginaActual.value = 1
+})
+
+watch(() => resultadoCategorias.value?.pagina, (pagina) => {
+    if (pagina && pagina !== paginaActual.value) {
+        paginaActual.value = pagina
+    }
+})
 
 // colores de los campos del formulario
 const colorTextoFormulario = 'text-texto-formulario';
@@ -198,16 +226,6 @@ async function borrarCategoria() {
 // ------------------------------------------------------------
 // FILTRO PARA CONSULTAS
 // ------------------------------------------------------------
-const busqueda = ref('')
-
-// categorias que se muestran, filtradas por el texto del buscador
-const categoriasFiltradas = computed(() => {
-    const texto = busqueda.value.trim().toLowerCase()
-    return (categorias.value ?? []).filter(c =>
-        !texto || c.nom_categoria.toLowerCase().includes(texto)
-    )
-})
-
 function limpiarFiltros() {
     busqueda.value = ''
 }
@@ -289,6 +307,25 @@ const tableMeta = createTableMeta<Categoria>()
                 </template>
             </UTable>
         </section>
+
+        <div v-if="categoriasFiltradas.length > 0 && !cargandoCategorias"
+            class="flex flex-col items-center justify-between gap-3 sm:flex-row">
+            <p class="text-sm text-texto/70">
+                Mostrando {{ (paginaActual - 1) * categoriasPorPagina + 1 }}–{{ (paginaActual - 1) * categoriasPorPagina + categoriasFiltradas.length }}
+                de {{ totalCategorias }} categorías
+            </p>
+            <div class="flex items-center gap-3">
+                <UButton :disabled="paginaActual <= 1 || cargandoCategorias" @click="paginaActual--"
+                    class="bg-boton hover:bg-boton-hover text-texto py-2 px-4 rounded-md font-bold transition-colors disabled:opacity-50">
+                    Anterior
+                </UButton>
+                <span class="text-sm text-texto">Página {{ paginaActual }} de {{ totalPaginas }}</span>
+                <UButton :disabled="paginaActual >= totalPaginas || cargandoCategorias" @click="paginaActual++"
+                    class="bg-boton hover:bg-boton-hover text-texto py-2 px-4 rounded-md font-bold transition-colors disabled:opacity-50">
+                    Siguiente
+                </UButton>
+            </div>
+        </div>
 
         <!-- FORMULARIO PARA AGREGAR CATEGORÍAS -->
         <Popups v-model:open="mostrarFormularioAgregar" title="Agregar categoría">
